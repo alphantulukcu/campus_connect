@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        body {
+            display: flex;
+            height: 1400px;
+            justify-content: center;
+            align-top: 40rem;
+            background: linear-gradient(to bottom right, #261D3D, #261D3D);
+        }
+
+        .container {
+            position: relative;
+            width: 100%;
+            height: auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(to bottom right, #261D3D, #261D3D);
+            overflow: hidden;
+        }
+
+        .container .first-image {
+            position: absolute;
+            top: 40%;
+            left: 50%;
+            height: 170px;
+            transform: translate(-50%, -50%);
+            transition: top 0.5s ease-in-out, height 1s ease-in-out;
+            margin-bottom: 1rem;
+        }
+
+        .container:hover .first-image {
+            top: 12%;
+        }
+
+       .form-container {
+            position: absolute;
+            top: 25%; /* Adjusts form-container to sit on the center line */
+            left: 50%;
+            transform: translate(-50%, 0) scale(0.8); /* Modifies the vertical transform to 0 */
+            opacity: 0;
+            transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
+            background-color: #E5E5E5;
+            padding: 2rem;
+            border-radius: 0.25rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            max-width: 50rem;
+            width: 100%;
+        }
+
+        .container:hover .form-container {
+            transform: translate(-50%, 0) scale(1); /* Modifies the vertical transform to 0 */
+            opacity: 1;
+        }
+
+        .form-container h3 {
+            text-align: center;
+            font-size: 1.875rem;
+            font-weight: bold;
+            margin-bottom: 1.5rem;
+        }
+        .form-container .mb-6 {
+            margin-bottom: 1.5rem;
+            color: #E05A4C;
+        }
+        .form-container .btn {
+            display: block;
+            width: 100%;
+            margin-top: 0.75rem;
+            padding: 0.75rem;
+            border-radius: 0.25rem;
+            background-color: #E05A4C;
+            color: #FFF;
+            font-weight: 600;
+            text-align: center;
+            cursor: pointer;
+            transition: background-color 0.3s ease-in-out;
+        }
+        .form-container .btn:hover {
+            background-color: #D2382D;
+        }
+        .form-container .logout-btn {
+            background-color: #6B7280;
+        }
+        .form-container .logout-btn:hover {
+            background-color: #4B5563;
+        }
+
+        .form-container .spinner {
+            display: hidden;
+            justify-content: center;
+            align-items: center;
+            margin-top: 1rem;
+        }
+
+
+        .form-container .spinner .animate-spin {
+            border-top-color: #4c9aff;
+            border-bottom-color: #4c9aff;
+        }
+
+        .form-container .flex.justify-center {
+            margin-top: 1rem;
+            gap: 1rem;
+        }
+        .form-container .mb-6 {
+            margin-bottom: 1.5rem;
+            color: #E05A4C;
+        }
+
+        select{
+            color: #261D3D;
+        }
+
+        .p-8 {
+          padding: 2rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container flex items-center justify-center h-screen">
+        <img src="{% static 'Radius_White.png' %}" alt="Background Image" class="first-image absolute top-40 left-1/2 transform -translate-x-1/2 transition top-10 hover:top-0">
+        <div class="form-container bg-white shadow-md rounded-md p-8 opacity-0 transition-opacity duration-500 hover:opacity-100">
+             <h3 class="text-center text-3xl font-bold mb-6">Radius Data Tool</h3>
+            {% if message %}
+                <div class="bg-yellow-100 text-yellow-800 rounded-md p-4 mb-4">
+                    {{ message }}
+                </div>
+            {% endif %}
+            <div class="mb-6">
+                <form action="{% url 'docs' %}" method="GET">
+                    <button type="submit" class="btn btn-primary w-full py-3 px-4 rounded-md text-white font-semibold bg-E05A4C hover:bg-D2382D">Unique User</button>
+                </form>
+            </div>
+            <div class="mb-6">
+                <form action="{% url 'hops' %}" method="GET">
+                    <button type="submit" class="btn btn-primary w-full py-3 px-4 rounded-md text-white font-semibold bg-E05A4C hover:bg-D2382D">Highly Occurring Profiles</button>
+                </form>
+            </div>
+            <div class="mb-6">
+                <form id='addForm' action="{% url 'types' %}" method="GET">
+                    <button type="submit" class="btn btn-primary w-full py-3 px-4 rounded-md text-white font-semibold bg-E05A4C hover:bg-D2382D">Type Edit Tool</button>
+                </form>
+            </div>
+            <div class="mb-6">
+                <form id='addForm2' action="{% url 'categories' %}" method="GET">
+                    <button type="submit" class="btn btn-primary w-full py-3 px-4 rounded-md text-white font-semibold bg-E05A4C hover:bg-D2382D">Category Edit Tool</button>
+                </form>
+            </div>
+            <form action="{% url 'logout' %}" method="GET">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-dark logout-btn w-full py-3 px-4 rounded-md text-white font-semibold">Log Out</button>
+            </form>
+
+            <br>
+            <div class="spinner hidden" id="spinner">
+                    <img src="{% static 'Radius_Black_Only_Logo.png' %}" class="animate-spin rounded-full h-20 w-20" alt="">
+            </div>
+        </div>
+    </div>
+
+    <!-- Optional JavaScript -->
+    <!-- Popper.js first, then Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/js/bootstrap.min.js"></script>
+    <script>
+        document.getElementById('addForm').addEventListener('submit', function() {
+            // When the form is submitted, show the spinner
+            document.getElementById('spinner').style.display = 'flex';
+        });
+
+        document.getElementById('addForm2').addEventListener('submit', function() {
+            // When the form is submitted, show the spinner
+            document.getElementById('spinner').style.display = 'flex';
+        });
+
+        document.getElementById('zipfile').addEventListener('change', function() {
+            var fileName = this.value.split("\\").pop();
+            if (fileName.length > 40) {
+                fileName = fileName.substring(0, 40) + "...";
+            }
+            document.getElementById('zipfile-label').textContent = fileName;
+        });
+
+        // Update the transform-origin property based on the scaled height
+        const formContainer = document.querySelector('.form-container');
+        formContainer.addEventListener('transitionend', () => {
+            if (formContainer.style.opacity === '1') {
+                const scaledHeight = formContainer.clientHeight;
+                formContainer.style.transformOrigin = `top calc(50% - ${scaledHeight / 2}px)`;
+            }
+        });
+    </script>
+</body>
+</html>
+
