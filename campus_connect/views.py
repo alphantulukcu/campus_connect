@@ -8,14 +8,12 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 import pandas as pd
-import gspread
 import hashlib
 import os
 from django.core.files.storage import FileSystemStorage
-import zipfile
-import shutil
 from datetime import datetime
-import warnings
+from django.contrib.auth.models import User
+
 
 users = [[os.getenv('USER1'), os.getenv('PASSWORD1')]]
 
@@ -77,6 +75,13 @@ class CampusConnectApiView(APIView):
 class LoginApiView(APIView):
     def get(self, request):
         if 'logged_in' not in request.session:
+            # user_name = "alphantulukcu"
+            # password = "radiusalphan314"
+            # h = hashlib.new("SHA256")
+            # h.update(user_name.encode())
+            # print(f"{user_name} = {h.hexdigest()}")
+            # h.update(password.encode())
+            # print(f"{user_name}'s password = {h.hexdigest()}")
             user_name = request.GET.get('username')
             password = request.GET.get('password')
             h = hashlib.new("SHA256")
@@ -93,6 +98,69 @@ class LoginApiView(APIView):
                     request.session['last_time'] = datetime_string
                     request.session['user_name'] = user_name
                     break
+
+            if 'logged_in' in request.session and request.session['logged_in']:
+                return redirect('campus_connect')
+            else:
+                message = 'Please enter correct user name and password!'
+                return render(request, 'login.html', {'message': message})
+        else:
+            return redirect('home')
+
+
+class RegisterApiView(APIView):
+    def get(self, request):
+        current_datetime = datetime.now()
+        # Convert the datetime object to a string
+        datetime_string = current_datetime.strftime("%Y-%m-%d %H:%M:%S")
+        date_format = "%Y-%m-%d %H:%M:%S"
+        # Convert the string to a datetime object
+        right_now = datetime.strptime(datetime_string, date_format)
+        if 'last_time' in request.session and ((right_now - datetime.strptime(request.session.get('last_time'),
+                                                                              date_format)).total_seconds() / 60) > 60:
+            fs = FileSystemStorage(location=os.path.join(os.getcwd(), 'data_tool/files/csv_files'))
+            for root, dirs, files in os.walk(fs.location):
+                for file in files:
+                    if f"{request.session['user_name']}" in file:
+                        os.remove(os.path.join(root, file))
+            request.session.flush()
+            return redirect('home')
+        elif 'logged_in' in request.session and request.session['logged_in']:
+            current_datetime = datetime.now()
+            # Convert the datetime object to a string
+            datetime_string = current_datetime.strftime("%Y-%m-%d %H:%M:%S")
+            request.session['last_time'] = datetime_string
+            return render(request, 'register.html')
+        else:
+            return redirect('home')
+
+
+class CreateAccountApiView(APIView):
+    def get(self, request):
+        if 'logged_in' not in request.session:
+            # user_name = "alphantulukcu"
+            # password = "radiusalphan314"
+            # h = hashlib.new("SHA256")
+            # h.update(user_name.encode())
+            # print(f"{user_name} = {h.hexdigest()}")
+            # h.update(password.encode())
+            # print(f"{user_name}'s password = {h.hexdigest()}")
+            user_name = request.GET.get('username')
+            user_fullname = request.GET.get('fullname')
+            user_email = request.GET.get('email')
+            password = request.GET.get('password')
+            h = hashlib.new("SHA256")
+            h.update(user_email.encode())
+            hash_email = h.hexdigest()
+            h.update(password.encode())
+            hash_password = h.hexdigest()
+
+            user = User.objects.create_user(user_name, hash_email, hash_password)
+
+            # Update fields and then save again
+            user.first_name = user_fullname.split()[0]
+            user.last_name = user_fullname.split()[1]
+            user.save()
 
             if 'logged_in' in request.session and request.session['logged_in']:
                 return redirect('campus_connect')

@@ -131,7 +131,7 @@
 </head>
 <body>
     <div class="container flex items-center justify-center h-screen">
-        <img src="{% static 'Radius_White.png' %}" alt="Background Image" class="first-image absolute top-40 left-1/2 transform -translate-x-1/2 transition top-10 hover:top-0">
+        <img src="{% static 'Logo_white.png' %}" alt="Background Image" class="first-image absolute top-40 left-1/2 transform -translate-x-1/2 transition top-10 hover:top-0">
         <div class="form-container bg-white shadow-md rounded-md p-8 opacity-0 transition-opacity duration-500 hover:opacity-100">
              <h3 class="text-center text-3xl font-bold mb-6">Radius Data Tool</h3>
             {% if message %}
@@ -140,22 +140,22 @@
                 </div>
             {% endif %}
             <div class="mb-6">
-                <form action="{% url 'docs' %}" method="GET">
+                <form action="" method="GET">
                     <button type="submit" class="btn btn-primary w-full py-3 px-4 rounded-md text-white font-semibold bg-E05A4C hover:bg-D2382D">Unique User</button>
                 </form>
             </div>
             <div class="mb-6">
-                <form action="{% url 'hops' %}" method="GET">
+                <form action="" method="GET">
                     <button type="submit" class="btn btn-primary w-full py-3 px-4 rounded-md text-white font-semibold bg-E05A4C hover:bg-D2382D">Highly Occurring Profiles</button>
                 </form>
             </div>
             <div class="mb-6">
-                <form id='addForm' action="{% url 'types' %}" method="GET">
+                <form id='addForm' action="" method="GET">
                     <button type="submit" class="btn btn-primary w-full py-3 px-4 rounded-md text-white font-semibold bg-E05A4C hover:bg-D2382D">Type Edit Tool</button>
                 </form>
             </div>
             <div class="mb-6">
-                <form id='addForm2' action="{% url 'categories' %}" method="GET">
+                <form id='addForm2' action="" method="GET">
                     <button type="submit" class="btn btn-primary w-full py-3 px-4 rounded-md text-white font-semibold bg-E05A4C hover:bg-D2382D">Category Edit Tool</button>
                 </form>
             </div>

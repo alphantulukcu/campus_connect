@@ -110,7 +110,7 @@
         <div class="form-container">
             <div class="">
                 <h3 class="text-center text-3xl font-bold mb-6">Login</h3>
-                <form action="{% url 'login' %}" method="GET">
+                <form action="{% url 'create_account' %}" method="POST">
                     {% csrf_token %}
                     {% if message %}
                         <div class="bg-yellow-100 text-yellow-800 rounded-md p-4 mb-4">
@@ -122,15 +122,19 @@
                       <input type="text" class="form-input" id="username" name="username" placeholder="Enter User Name" required>
                     </div>
                     <div class="mb-4">
+                      <label for="fullname" class="block text-gray-700">Name and Surname:</label>
+                      <input type="text" class="form-input" id="fullname" name="fullname" placeholder="Enter Name and Surname" required>
+                    </div>
+                    <div class="mb-4">
+                      <label for="email" class="block text-gray-700">User email:</label>
+                      <input type="text" class="form-input" id="email" name="email" placeholder="Enter User Email" required>
+                    </div>
+                    <div class="mb-4">
                       <label for="password" class="block text-gray-700">Password:</label>
                       <input type="password" class="form-input" id="password" name="password" placeholder="Enter Password" required>
                     </div>
-                    <button type="submit" class="btn">LOG IN</button>
+                    <button type="submit" class="btn">Register</button>
                   </form>
-                  <form action="{% url 'register' %}" id='addForm2'  method="GET">
-                      <button type="submit" class="btn btn-primary w-full py-3 px-4 rounded-md text-white font-semibold bg-E05A4C hover:bg-D2382D">Register</button>
-                  </form>
-            </div>
             </div>
         </div>
     </div>

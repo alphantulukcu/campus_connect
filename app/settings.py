@@ -41,7 +41,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'app',
+    'campus_connect',
+    'rest_framework',
+    'rest_framework.authtoken',
+    'drf_yasg',
 ]
 
 REST_FRAMEWORK = {
@@ -89,9 +92,13 @@ WSGI_APPLICATION = 'app.wsgi.application'
 try:
     DATABASES = {
         'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': ':memory:',
-        }
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': 'campus_connect',
+            'USER': 'admin',
+            'PASSWORD': 'denizcan',
+            'HOST': 'database-1.cqh5cwafuyan.eu-north-1.rds.amazonaws.com',
+            'PORT': '3306',
+        },
     }
 except Exception as e:
     print(f'error: {e}')
