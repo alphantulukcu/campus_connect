@@ -1,3 +1,10 @@
+# Team Members
+Alphan Tulukcu / @alphantulukcu  
+İlhami Uluğtürkkan / @ilhamiulugturkkan  
+Deniz Can Özdemir / @denizcancan  
+Çağatay Akpınar / @cakpinar1  
+Feza Emir Çelik / @fezaemircelik  
+
 # Campus Connect 
 Welcome to the GitHub repository for CampusConnect, the ultimate online platform designed exclusively for the vibrant community of Bilkent University. CampusConnect is a multifaceted website dedicated to enhancing the campus experience for students, faculty, and staff. Our platform integrates various features to cater to the diverse needs of the university community. From buying and selling second-hand textbooks and furniture to helping reunite lost items with their owners, we aim to foster a sense of unity and convenience within the Bilkent community.
 
@@ -40,11 +47,3 @@ Q&A for the Instructors with Security Barrier
 •Bilkent University members can talk about instructors before the semesters at CampusConnect platform under the supervision of security barrier.    
 Q&A for the Section Trading with Security Barrier  
 •Bilkent University members can talk about section trrading at CampusConnect platform under the supervision of security barrier.  
-
-
-# Team Members
-Alphan Tulukcu ~ 22003500 / @alphantulukcu  
-İlhami Uluğtürkkan ~ 22102546 / @ilhamiulugturkkan  
-Deniz Can Özdemir ~ 22003854 / @denizcancan  
-Çağatay Akpınar ~ 22003508 / @cakpinar1  
-Feza Emir Çelik ~ 22101910 / @fezaemircelik  
