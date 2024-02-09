@@ -1,0 +1,299 @@
+{% extends "half_base.html" %}
+{% load static %}
+{% block title %}
+Chat
+{% endblock %}
+
+{% block content %}
+        <div class="left-container">
+            {% if chat.owner == profile %}
+                    <div class="profile-card">
+                        <div class="profile-header">
+                            <img src="{{ chat.client.profile_image }}" class="profile-image" alt="Profile Image">
+                            <div class="profile-details">
+                                 <form action="{% url 'show_profile' %}" method="post">
+                                            <input type="hidden" id='user_id_1' name='user_id_1'  value="{{chat.client.id}}">
+                                            {% csrf_token %}
+                                            <button type="submit">
+                                                <p>
+                                                    {{ chat.client.user.first_name }} {{ chat.client.user.last_name }}
+                                                    {% if chat.client.is_verified == 1 %}
+                                                        <i class="fa-regular fa-circle-check" style="color: #30aa0e; margin-left: 0.5rem"></i>
+                                                    {% endif %}
+                                                </p>
+                                            </button>
+                                        </form>
+
+                                <h2>@{{ chat.client.user.username }}</h2>
+                                <h2 class="profile-bio">{{chat.client.bio}}</h2>
+                            </div>
+                        </div>
+                    </div>
+            {% else %}
+                    <div class="profile-card">
+                        <div class="profile-header">
+                            <img src="{{chat.post.owner.profile_image}}" class="profile-image" alt="Profile Image">
+                            <div class="profile-details">
+                                 <form action="{% url 'show_profile' %}" method="post">
+                                            <input type="hidden" id='user_id_1' name='user_id_1'  value="{{chat.owner.id}}">
+                                            {% csrf_token %}
+                                            <button type="submit">
+                                                <p>
+                                                    {{ chat.post.owner.user.first_name }} {{ chat.post.owner.user.last_name }}
+                                                    {% if chat.post.owner.is_verified == 1 %}
+                                                        <i class="fa-regular fa-circle-check" style="color: #30aa0e; margin-left: 0.5rem"></i>
+                                                    {% endif %}
+                                                </p>
+                                            </button>
+                                        </form>
+
+                                <h2>@{{ chat.post.owner.user.username }}</h2>
+                                <h2 class="profile-bio">{{chat.post.owner.bio}}</h2>
+                            </div>
+                        </div>
+                    </div>
+            {% endif %}
+                    <div class="detailed-post">
+
+                            <div class="detailed-post-content">
+                                <h2>{{chat.post.title}}</h2>
+                                <h1>{{chat.post.category.name}} / {{chat.post.subcategory.name}}</h1>
+                                <h6>{{chat.post.description}}</h6>
+                                <h3>{{chat.post.price}}₺</h3>
+                                <h1>{{chat.post.created_at|timesince:now}} ago</h1>
+                            </div>
+
+                    </div>
+        </div>
+        <div class="right-container">
+            {% if message %}
+                <div class="bg-yellow-100 text-yellow-800 rounded-md p-4 mb-4">
+                    {{ message }}
+                </div>
+            {% endif %}
+            <div class="message-container" >
+                    <form action="{% url 'chat_room' %}" method="post">
+                            <input type="hidden" id='post_id_1' name='post_id_1'  value="{{chat.post.id}}">
+                            {% csrf_token %}
+                            <br>
+                            <button type="submit"><h2>Click to refresh messages</h2></button>
+                    </form>
+                <div class="scroll-container">
+                {% if messages == 'Empty' %}
+                    <input type="hidden" id='last_message_id' name='user_id_3'  value=0>
+                    <div class="chat-preview-card">
+                            <div class="card-content">
+                                <h2>Anyone have not started chat yet</h2>
+                                <h6> </h6>
+                            </div>
+                    </div>
+                {% else %}
+                    <input type="hidden" id='last_message_id' name='user_id_3'  value="{{chat.get_last_message.id}}">
+                    {% for message in messages %}
+                        {% if message.from_profile.id == profile.id %}
+                            <div class="message-sender-card">
+                                <div class="message-header">
+                                    <img src="{{ message.from_profile.profile_image}}" class="comment-image" alt="Profile Image">
+                                    <div class="message-details">
+                                         <form action="{% url 'show_profile' %}" method="post">
+                                                    <input type="hidden" id='user_id_2' name='user_id_2'  value="{{message.from_profile.id}}">
+                                                    {% csrf_token %}
+                                                    <button type="submit">
+                                                        <p>
+                                                            {{ message.from_profile.user.first_name }} {{ message.from_profile.user.last_name }}
+                                                            {% if message.from_profile.is_verified == 1 %}
+                                                                <i class="fa-regular fa-circle-check" style="color: #30aa0e;"></i>
+                                                            {% endif %}
+                                                        </p>
+                                                    </button>
+                                                </form>
+                                        <h2>{{message.message}}</h2>
+                                        <h1>{{message.created_at|timesince:now}} ago</h1>
+                                    </div>
+                                </div>
+                            </div>
+                        {% else %}
+                            <div class="message-receiver-card">
+                                <div class="message-header">
+                                    <img src="{{ message.from_profile.profile_image}}" class="comment-image" alt="Profile Image">
+                                    <div class="message-details">
+                                         <form action="{% url 'show_profile' %}" method="post">
+                                                    <input type="hidden" id='user_id_3' name='user_id_3'  value="{{message.from_profile.id}}">
+                                                    {% csrf_token %}
+                                                    <button type="submit">
+                                                        <p>{{ message.from_profile.user.first_name }} {{ message.from_profile.user.last_name }}
+                                                         {% if message.from_profile.is_verified == 1 %}
+                                                                <i class="fa-regular fa-circle-check" style="color: #30aa0e;"></i>
+                                                        {% endif %}
+                                                        </p>
+                                                    </button>
+                                                </form>
+                                        <h2>{{message.message}}</h2>
+                                        <h4>{{message.created_at|timesince:now}} ago</h4>
+                                    </div>
+                                </div>
+                            </div>
+
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+                </div>
+                <input type="hidden" id='chatId' name='user_id_3'  value="{{chat.id}}">
+                <input type="hidden" id='data' name='user_id_3'  value="{{data}}">
+
+                <div class="mb-4">
+                    <form action="{% url 'send_message' %}" method="post">
+                        <input type="hidden" id='chat_id' name='chat_id'  value="{{chat.id}}">
+                        <input type="text" class="form-input" id="message" name="message" placeholder="Type your message..." >
+                        {% csrf_token %}
+                        <br>
+                        <button class="settings-button" type="submit">Send</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    <!-- Optional JavaScript -->
+    <!-- Popper.js first, then Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/js/bootstrap.min.js"></script>
+    <script>
+
+        document.getElementById('addForm').addEventListener('submit', function() {
+            // When the form is submitted, show the spinner
+            document.getElementById('spinner').style.display = 'flex';
+        });
+
+        document.getElementById('addForm2').addEventListener('submit', function() {
+            // When the form is submitted, show the spinner
+            document.getElementById('spinner').style.display = 'flex';
+        });
+    </script>
+
+<script>
+    let slideIndex = 1;
+    showSlides(slideIndex);
+
+    function plusSlides(n) {
+      showSlides(slideIndex += n);
+    }
+
+    function currentSlide(n) {
+      showSlides(slideIndex = n);
+    }
+
+    function showSlides(n) {
+      let i;
+      let slides = document.getElementsByClassName("mySlides");
+      let dots = document.getElementsByClassName("dot");
+      if (n > slides.length) {slideIndex = 1}
+      if (n < 1) {slideIndex = slides.length}
+      for (i = 0; i < slides.length; i++) {
+        slides[i].style.display = "none";
+      }
+      for (i = 0; i < dots.length; i++) {
+        dots[i].className = dots[i].className.replace(" active", "");
+      }
+      slides[slideIndex-1].style.display = "block";
+      dots[slideIndex-1].className += " active";
+    }
+
+
+    </script>
+    <script>
+      // Scroll to the bottom of the container when the page loads
+      document.addEventListener("DOMContentLoaded", function() {
+          var scrollContainer = document.querySelector(".scroll-container");
+
+
+        // Set the scroll position to the bottom
+        scrollContainer.scrollTop = scrollContainer.scrollHeight;
+      });
+</script>
+<script>
+    // Function to fetch new messages
+    function fetchNewMessages(chatId) {
+        fetch(`/get_messages_by_chat_id/${chatId}/`)
+            .then(response => response.json())
+            .then(data => {
+                console.log('Fetched messages:', data.messages);
+                // Add logic to compare and append new messages
+                appendNewMessages(data.messages);
+            });
+    }
+
+    // Function to append new messages to the UI
+    function appendNewMessages(newMessages) {
+        const messageContainer = document.querySelector(".scroll-container");
+        var lastMessage = document.getElementById('last_message_id');
+
+        // Check if the input element exists
+        if (lastMessage) {
+            // Retrieve the value of the input element
+            var lastMessageId = lastMessage.value;
+            }
+        console.log("last messageeeeeeeee");
+        console.log(lastMessageId);
+        newMessages.forEach(message => {
+            // Check if the message is already in the container
+            if (!document.querySelector(`[data-message-id="${message.id}"]`)) {
+                // Create HTML for the new message
+
+                if(message.id > lastMessageId) {
+                    const newMessageHtml = createMessageHtml(message);
+
+                    // Append the new message to the container
+                    messageContainer.innerHTML += newMessageHtml;
+                }
+
+            }
+        });
+
+
+        // Scroll to the bottom of the container
+        messageContainer.scrollTop = messageContainer.scrollHeight;
+    }
+
+    // Function to create HTML for a message
+   function createMessageHtml(message) {
+    return `
+        <div class="message-receiver-card" data-message-id="${message.id}">
+            <div class="message-header">
+                <img src="${message.profileimg}" class="comment-image" alt="Profile Image">
+                <div class="message-details">
+                    <form action="{% url 'show_profile' %}" method="post">
+                        <input type="hidden" id='user_id_3' name='user_id_3' value="${message.from_profile_id}">
+                        {% csrf_token %}
+                        <button type="submit">
+                            <p>${message.from_profile_name} ${message.from_profile_last_name}</p>
+                        </button>
+                    </form>
+                    <h2>${message.text}</h2>
+                    <h4>new</h4>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+    // Start refreshing for a specific chat ID
+    var chatIdInput = document.getElementById('chatId');
+
+    // Check if the input element exists
+    if (chatIdInput) {
+        // Retrieve the value of the input element
+        var chatId = chatIdInput.value;
+
+        // Start the refresh interval
+        setInterval(() => {
+            fetchNewMessages(chatId);
+        }, 5000);  // Adjust the interval as needed
+    }
+
+</script>
+
+
+
+{% endblock %}
+
+

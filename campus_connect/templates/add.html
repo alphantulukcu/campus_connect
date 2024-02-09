@@ -1,0 +1,663 @@
+{% extends "profile.html" %}
+{% load static %}
+
+{% block title %}
+Add
+{% endblock %}
+
+
+
+{% block content %}
+        <div class="flex">
+            <button class="toggle-title" >Preview</button>
+        </div>
+        <div class="card-container"  >
+                    <!-- Card 1 -->
+            <div class="card" id="postPreview">
+                <div class="profile-for_card">
+                    <img class="profile-for_card" src="{{profile.profile_image}}" >
+                    <form action="{% url 'show_profile' %}" method="post">
+                        <input type="hidden" id='user_id_2' name='user_id_2'  value="{{post.owner.id}}">
+                        {% csrf_token %}
+                        <button type="submit">
+                            <p>
+                                {{ profile.user.first_name }} {{ profile.user.last_name }}
+                                {% if profile.is_verified == 1 %}
+                                    <i class="fa-regular fa-circle-check" style="color: #30aa0e;"></i>
+                                {% endif %}
+                            </p>
+                        </button>
+                    </form>
+                </div>
+                <img id="img1" class="card-img" src="{% static 'blank_image.jpg' %}" alt="Example">
+
+                <div class="card-content">
+                        <h2>Title</h2>
+                        <h6>Description</h6>
+                        <h3>0₺</h3>
+                    </div>
+            </div>
+
+            <div class="card" id="entryPreview">
+                <div class="profile-for_card">
+                    <img class="profile-for_card" src="{{profile.profile_image}}" >
+                    <form action="{% url 'show_profile' %}" method="post">
+                        <input type="hidden" id='user_id_2' name='user_id_2'  value="{{post.owner.id}}">
+                        {% csrf_token %}
+                        <button type="submit">
+                                    <p>
+                                        {{ profile.user.first_name }} {{ profile.user.last_name }}
+                                        {% if profile.is_verified == 1 %}
+                                            <i class="fa-regular fa-circle-check" style="color: #30aa0e;"></i>
+                                        {% endif %}
+                                    </p>
+                        </button>
+                    </form>
+                </div>
+                <div class="card-content">
+                    <h2>Title</h2>
+                    <h6>Description</h6>
+                </div>
+            </div>
+        </div>
+</div>
+
+
+    <div class="right-container">
+<div>
+    <div class="flex">
+         <button class="toggle-title" onclick="toggleTabs('postTab'); fetchCategories('postTab','category');">Post</button>
+         <button class="toggle-title" onclick="toggleTabs('entryTab'); fetchCategories('entryTab','entry_category');">Entry</button>
+         <button class="toggle-title" onclick="toggleTabs('donateAdTab'); fetchCategories('donateAdTab','donate_category');">Donation</button>
+         <button class="toggle-title" onclick="toggleTabs('borrowAdTab'); fetchCategories('borrowAdTab','borrow_category');">Borrow</button>
+    </div>
+    <div class="add-card mx-auto" id="postTab">
+        <form enctype="multipart/form-data" action="{% url 'add_post' %}" method="POST">
+            {% csrf_token %}
+
+            <div class = "something">
+                <label for="file_input" id="drop-area" class="drop-area">
+                    <input type="file" accept="image/*" id="file_input" name="file_input" hidden onchange="previewImage(event)" required>
+                    <div id="img-view" class="img-view">
+                        <img>
+                    </div>
+                </label>
+                <label for="file_input1" id="drop-area1" class="drop-area2">
+                    <input type="file" accept="image/*" id="file_input1" name="file_input1" hidden onchange="previewImage(event)">
+                    <div id="img-view1" class="img-view">
+                        <img>
+                    </div>
+                </label>
+                <label for="file_input2" id="drop-area2" class="drop-area2">
+                    <input type="file" accept="image/*" id="file_input2" name="file_input2" hidden onchange="previewImage(event)">
+                    <div id="img-view2" class="img-view">
+                        <img>
+                    </div>
+                </label>
+            </div>
+            <div class="mb-4">
+              <label for="post_title" class="label">Title:</label>
+              <input type="text" class="form-input" id="post_title" name="post_title" placeholder="Enter Title" required>
+            </div>
+            <div class="mb-4">
+              <label for="post_description" class="label">Description:</label>
+              <input type="text" class="form-input" id="post_description" name="post_description" placeholder="Enter Description" required>
+            </div>
+            <div class="form-group">
+                <label for="category" class="label">Category:</label>
+                <select id="category" name="category" class="form-input" onchange="updateSubcategories('category','subcategory')" required>
+                    <option value="" disabled selected>Select a category</option>
+                    <!-- Categories will be added dynamically -->
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="subcategory" class="label">Subcategory:</label>
+                <select id="subcategory" name="subcategory" class="form-input" disabled required>
+                    <option value="" disabled selected>Select a subcategory</option>
+                    <!-- Subcategories will be added dynamically -->
+                </select>
+            </div>
+
+            <div class="mb-4">
+              <label for="post_price" class="label">Price:</label>
+              <input type="number" class="form-input" id="post_price" name="post_price" min="0" placeholder="Enter Price" value="0">
+            </div>
+
+            <button type="submit" class="settings-button" >Save Changes</button>
+        </form>
+    </div>
+
+    <div class="add-card mx-auto" id="entryTab">
+
+        <form action="{% url 'add_entry' %}" method="POST">
+            {% csrf_token %}
+
+                <div class="mb-4">
+                    <label for="entry_title" class="label">Title:</label>
+                    <input type="text" class="form-input" id="entry_title" name="entry_title" placeholder="Enter Title" >
+                </div>
+                <div class="mb-4">
+                    <label for="entry_description" class="label">Description:</label>
+                    <input type="text" class="form-input" id="entry_description" name="entry_description" placeholder="Enter Description" >
+                </div>
+                            <div class="form-group">
+                <label for="category" class="label">Category:</label>
+                <select id="entry_category" name="category" class="form-input" onchange="updateSubcategories('entry_category','entry_subcategory')" required>
+                    <option value="" disabled selected>Select a category</option>
+                    <!-- Categories will be added dynamically -->
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="subcategory" class="label">Subcategory:</label>
+                <select id="entry_subcategory" name="subcategory" class="form-input" disabled required>
+                    <option value="" disabled selected>Select a subcategory</option>
+                    <!-- Subcategories will be added dynamically -->
+                </select>
+            </div>
+
+                <label for="entry_is_anonymous" class="label">Do you want to be anonymous for this sharing?</label>
+                <div class="mb-4">
+                <select id="entry_is_anonymous" name="entry_is_anonymous" class="form-input">
+                    <option value="">Select</option>
+                    <option value="1">Yes</option>
+                    <option value="0">No</option>
+                </select>
+            </div>
+
+            <button type="submit" class="settings-button">Save Changes</button>
+        </form>
+    </div>
+
+    <div class="add-card mx-auto" id="donateAdTab">
+
+        <a href="{% url 'edit_profile' %}" class="btn">Upload Image</a>
+        <form enctype="multipart/form-data" action="{% url 'add_donation' %}" method="POST">
+            {% csrf_token %}
+
+            <div class = "something">
+                <label for="file_input3" id="drop-area3" class="drop-area">
+                    <input type="file" accept="image/*" id="file_input3" name="file_input3" hidden onchange="previewImage(event)" required>
+                    <div id="img-view3" class="img-view">
+                        <img >
+                    </div>
+                </label>
+                <label for="file_input4" id="drop-area4" class="drop-area2">
+                    <input type="file" accept="image/*" id="file_input4" name="file_input4" hidden onchange="previewImage(event)">
+                    <div id="img-view4" class="img-view">
+                        <img >
+                    </div>
+                </label>
+                <label for="file_input5" id="drop-area5" class="drop-area2">
+                    <input type="file" accept="image/*" id="file_input5" name="file_input5" hidden onchange="previewImage(event)">
+                    <div id="img-view5" class="img-view">
+                        <img >
+                    </div>
+                </label>
+            </div>
+            <div class="mb-4">
+              <label for="donateAd_title" class="label">Title:</label>
+              <input type="text" class="form-input" id="donateAd_title" name="donateAd_title" placeholder="Enter Title" value="Title">
+            </div>
+            <div class="mb-4">
+              <label for="donateAd_description" class="label">Description:</label>
+              <input type="text" class="form-input" id="donateAd_description" name="donateAd_description" placeholder="Enter Description" value="Description">
+            </div>
+            <div class="form-group">
+                <label for="category" class="label">Category:</label>
+                <select id="donate_category" name="category" class="form-input" onchange="updateSubcategories('donate_category','donate_subcategory')" required>
+                    <option value="" disabled selected>Select a category</option>
+                    <!-- Categories will be added dynamically -->
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="subcategory" class="label">Subcategory:</label>
+                <select id="donate_subcategory" name="subcategory" class="form-input" disabled required>
+                    <option value="" disabled selected>Select a subcategory</option>
+                    <!-- Subcategories will be added dynamically -->
+                </select>
+            </div>
+
+            <button type="submit" class="settings-button">Save Changes</button>
+        </form>
+    </div>
+
+    <div class="add-card mx-auto" id="borrowAdTab">
+
+        <a href="{% url 'edit_profile' %}" class="btn">Upload Image</a>
+        <form enctype="multipart/form-data" action="{% url 'add_borrow_ad' %}" method="POST">
+            {% csrf_token %}
+           <div class = "something">
+                <label for="file_input6" id="drop-area6" class="drop-area">
+                    <input type="file" accept="image/*" id="file_input6" name="file_input6" hidden onchange="previewImage(event)" required>
+                    <div id="img-view6" class="img-view">
+                        <img>
+                    </div>
+                </label>
+                <label for="file_input7" id="drop-area7" class="drop-area2">
+                    <input type="file" accept="image/*" id="file_input7" name="file_input7" hidden onchange="previewImage(event)">
+                    <div id="img-view7" class="img-view">
+                        <img>
+                    </div>
+                </label>
+                <label for="file_input8" id="drop-area8" class="drop-area2">
+                    <input type="file" accept="image/*" id="file_input8" name="file_input8" hidden onchange="previewImage(event)">
+                    <div id="img-view8" class="img-view">
+                        <img>
+                    </div>
+                </label>
+            </div>
+            <div class="mb-4">
+              <label for="borrowAd_title" class="label">Title:</label>
+              <input type="text" class="form-input" id="borrowAd_title" name="borrowAd_title" placeholder="Enter Title" value="Title">
+            </div>
+            <div class="mb-4">
+              <label for="borrowAd_description" class="label">Description:</label>
+              <input type="text" class="form-input" id="borrowAd_description" name="borrowAd_description" placeholder="Enter Description"value="Description">
+            </div>
+                       <div class="form-group">
+                <label for="category" class="label">Category:</label>
+                <select id="borrow_category" name="category" class="form-input" onchange="updateSubcategories('borrow_category','borrow_subcategory')" required>
+                    <option value="" disabled selected>Select a category</option>
+                    <!-- Categories will be added dynamically -->
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="subcategory" class="label">Subcategory:</label>
+                <select id="borrow_subcategory" name="subcategory" class="form-input" disabled required>
+                    <option value="" disabled selected>Select a subcategory</option>
+                    <!-- Subcategories will be added dynamically -->
+                </select>
+            </div>
+
+            <div class="mb-4">
+              <label for="borrowAd_price" class="label">Price:</label>
+              <input type="number" class="form-input" id="borrowAd_price" name="borrowAd_price" min="0" placeholder="Enter Price" value="0">
+            </div>
+
+            <div class="mb-4">
+              <label for="borrowAd_return_day" class="label">Return Day Amount:</label>
+              <input type="number" class="form-input" id="borrowAd_return_day" name="borrowAd_return_day" min="0" placeholder="Enter Return Day Amount" value="0">
+            </div>
+
+            <button type="submit" class="settings-button">Save Changes</button>
+        </form>
+    </div>
+    </div>
+</div>
+<script>
+        function previewImage(event) {
+          const file = event.target.files[0];
+          const reader = new FileReader();
+
+          reader.onload = function() {
+            const preview = document.getElementById('postPreview'); // Assuming postPreview is the preview element ID
+            const img = preview.querySelector('#img1');
+            img.src = reader.result;
+
+           /* const post = document.getElementById('postTab'); // Assuming postPreview is the preview element ID
+            const img2 = post.querySelector('img');
+            img2.src = reader.result;
+
+            const donation = document.getElementById('donateAdTab'); // Assuming postPreview is the preview element ID
+            const img3 = donation.querySelector('img');
+            img3.src = reader.result;
+
+            const borrow = document.getElementById('borrowAdTab'); // Assuming postPreview is the preview element ID
+            const img4 = borrow.querySelector('img');
+            img4.src = reader.result; */
+          }
+
+          if (file) {
+            reader.readAsDataURL(file);
+          }
+        }
+            document.addEventListener("DOMContentLoaded", function() {
+            fetchCategories('postTab','category');
+        });
+
+        function fetchCategories(tabName,categoryId) {
+            const postTab = document.getElementById('postTab');
+            const entryTab = document.getElementById('entryTab');
+            const donateAdTab = document.getElementById('donateAdTab');
+            const borrowAdTab = document.getElementById('borrowAdTab');
+
+            if(tabName==='entryTab'){
+                fetch('/api/categories/1')
+                    .then(response => response.json())
+                    .then(categories => {
+                        populateDropdown(document.getElementById(categoryId), categories);
+                    })
+                    .catch(error => console.error('Error fetching categories:', error));
+            }
+            else{
+                fetch('/api/categories/0')
+                    .then(response => response.json())
+                    .then(categories => {
+                        populateDropdown(document.getElementById(categoryId), categories);
+                    })
+                    .catch(error => console.error('Error fetching categories:', error));
+            }
+
+
+        }
+
+        function updateSubcategories(category,subcategoryId) {
+            const categorySelect = document.getElementById(category);
+            const categoryId = categorySelect.value;
+            const subcategorySelect = document.getElementById(subcategoryId);
+            subcategorySelect.innerHTML = ''; // Clear subcategory dropdown
+            subcategorySelect.disabled = true; // Disable subcategory dropdown until loaded
+
+            if (categoryId) {
+                fetch(`/api/subcategories/${categoryId}/`)
+                    .then(response => response.json())
+                    .then(subcategories => {
+                        populateDropdown(subcategorySelect, subcategories);
+                        subcategorySelect.disabled = false; // Enable subcategory dropdown
+                    })
+                    .catch(error => console.error('Error fetching subcategories:', error));
+            }
+        }
+
+        function populateDropdown(dropdown, items) {
+            dropdown.innerHTML = '<option value="" disabled selected>Select</option>'; // default option
+            items.forEach(item => {
+
+                const option = document.createElement('option');
+                option.value = item.id;
+                console.log(item.id);
+                option.textContent = item.name;
+                dropdown.appendChild(option);
+            });
+        }
+
+
+</script>
+<script>
+    function showTab(tabName) {
+        const tabs = document.getElementsByClassName('tab');
+        for (const tab of tabs) {
+            tab.style.display = 'none';
+        }
+        document.getElementById(tabName).style.display = 'block';
+    }
+
+    function toggleTabs(tabName) {
+        const postTab = document.getElementById('postTab');
+        const entryTab = document.getElementById('entryTab');
+        const donateAdTab = document.getElementById('donateAdTab');
+        const borrowAdTab = document.getElementById('borrowAdTab');
+
+
+
+        if (tabName === 'postTab') {
+            postTab.style.display = 'flex';
+            postTab.style.flexDirection = 'column';
+            postPreview.style.display = 'flex';
+            entryTab.style.display = 'none';
+            entryPreview.style.display = 'none';
+            donateAdTab.style.display = 'none';
+            borrowAdTab.style.display = 'none';
+        }
+
+        else if (tabName === 'entryTab') {
+            postTab.style.display = 'none';
+            postPreview.style.display = 'none';
+            entryTab.style.display = 'flex';
+            entryTab.style.flexDirection = 'column';
+            entryPreview.style.display = 'flex';
+            donateAdTab.style.display = 'none';
+            borrowAdTab.style.display = 'none';
+        }
+
+        else if (tabName === 'donateAdTab') {
+            postTab.style.display = 'none';
+            postPreview.style.display = 'flex';
+            entryTab.style.display = 'none';
+            entryPreview.style.display = 'none';
+            donateAdTab.style.display = 'flex';
+            donateAdTab.style.flexDirection = 'column';
+            borrowAdTab.style.display = 'none';
+        }
+
+        else if (tabName === 'borrowAdTab') {
+            postTab.style.display = 'none';
+            postPreview.style.display = 'flex';
+            entryTab.style.display = 'none';
+            entryPreview.style.display = 'none';
+            donateAdTab.style.display = 'none';
+            borrowAdTab.style.display = 'flex';  // Ensure the correct case here
+            borrowAdTab.style.flexDirection = 'column';
+        }
+    }
+
+    // Show the postTab by default
+    toggleTabs('postTab');
+
+
+    document.addEventListener('DOMContentLoaded', function() {
+    // Get the input elements
+    const postTitleInput = document.getElementById('post_title');
+    const postDescriptionInput = document.getElementById('post_description');
+    const postPriceInput = document.getElementById('post_price');
+    const entryTitleInput = document.getElementById('entry_title');
+    const entryDescriptionInput = document.getElementById('entry_description');
+    const donateAdTitleInput = document.getElementById('donateAd_title');
+    const donateAdDescriptionInput = document.getElementById('donateAd_description');
+    const borrowAdTitleInput = document.getElementById('borrowAd_title');
+    const borrowAdDescriptionInput = document.getElementById('borrowAd_description');
+    const borrowAdPriceInput = document.getElementById('borrowAd_price');
+    const borrowAdReturnDayInput = document.getElementById('borrowAd_return_day');
+
+    // Get the preview elements
+    const postPreview = document.getElementById('postPreview');
+    const entryPreview = document.getElementById('entryPreview');
+
+    // Add event listeners to the input fields
+    postTitleInput.addEventListener('input', updatePostPreview);
+    postDescriptionInput.addEventListener('input', updatePostPreview);
+    postPriceInput.addEventListener('input', updatePostPreview);
+    entryTitleInput.addEventListener('input', updateEntryPreview);
+    entryDescriptionInput.addEventListener('input', updateEntryPreview);
+    donateAdTitleInput.addEventListener('input', updateDonateAdPreview);
+    donateAdDescriptionInput.addEventListener('input', updateDonateAdPreview);
+    borrowAdTitleInput.addEventListener('input', updateBorrowAdPreview);
+    borrowAdDescriptionInput.addEventListener('input', updateBorrowAdPreview);
+    borrowAdPriceInput.addEventListener('input', updateBorrowAdPreview);
+    borrowAdReturnDayInput.addEventListener('input', updateBorrowAdPreview);
+
+    // Function to update the post preview
+    function updatePostPreview() {
+        const title = postTitleInput.value;
+        const description = postDescriptionInput.value;
+        const price = postPriceInput.value;
+
+        // Update the preview content
+        postPreview.querySelector('h2').textContent = title;
+        postPreview.querySelector('h6').textContent = description;
+        postPreview.querySelector('h3').textContent = price + '₺';
+    }
+
+    function updateDonateAdPreview() {
+        const title = donateAdTitleInput.value;
+        const description = donateAdDescriptionInput.value;
+        const price = 'free';
+
+        // Update the preview content
+        postPreview.querySelector('h2').textContent = title;
+        postPreview.querySelector('h6').textContent = description;
+        postPreview.querySelector('h3').textContent = price;
+    }
+
+    function updateBorrowAdPreview() {
+        const title = borrowAdTitleInput.value;
+        const description = borrowAdDescriptionInput.value;
+        const price = borrowAdPriceInput.value;
+        const returnDay = borrowAdReturnDayInput.value;
+
+        // Update the preview content
+        postPreview.querySelector('h2').textContent = title;
+        postPreview.querySelector('h6').textContent = description;
+        postPreview.querySelector('h3').textContent = price + '₺ for ' + returnDay + ' days';
+    }
+
+    // Function to update the entry preview
+    function updateEntryPreview() {
+        const title = entryTitleInput.value;
+        const description = entryDescriptionInput.value;
+
+        // Update the preview content
+        entryPreview.querySelector('h2').textContent = title;
+        entryPreview.querySelector('h6').textContent = description;
+        // Assuming you want to display status in the preview
+    }
+
+
+    //INPUT BOXES FOR POST
+    const inputFile = document.getElementById("file_input");
+    const inputFile1 = document.getElementById("file_input1");
+    const inputFile2 = document.getElementById("file_input2");
+    const imageView = document.getElementById("img-view");
+    const imageView1 = document.getElementById("img-view1");
+    const imageView2 = document.getElementById("img-view2");
+    const drop1 = document.getElementById("drop-area1");
+    const drop2 = document.getElementById("drop-area2");
+
+    inputFile.addEventListener("change",uploadImage);
+    inputFile1.addEventListener("change",uploadImage1);
+    inputFile2.addEventListener("change",uploadImage2);
+
+    function uploadImage(){
+        let imgLink = URL.createObjectURL(inputFile.files[0]);
+        imageView.style.backgroundImage = `url(${imgLink})`;
+        imageView.textContent = "";
+        imageView.style.border = 0;
+        drop1.style.pointerEvents= "auto";
+        drop1.style.opacity = 1;
+        // Clone the selected file to file_input1
+        let fileInput1 = document.getElementById("file_input1");
+        fileInput1.files = inputFile.files;
+
+        // Clone the selected file to file_input2
+        let fileInput2 = document.getElementById("file_input2");
+        fileInput2.files = inputFile.files;
+    }
+    function uploadImage1(){
+        let imgLink = URL.createObjectURL(inputFile1.files[0]);
+        imageView1.style.backgroundImage = `url(${imgLink})`;
+        imageView1.textContent = "";
+        imageView1.style.border = 0;
+        drop2.style.pointerEvents= "auto";
+        drop2.style.opacity = 1;
+    }
+    function uploadImage2(){
+        let imgLink = URL.createObjectURL(inputFile2.files[0]);
+        imageView2.style.backgroundImage = `url(${imgLink})`;
+        imageView2.textContent = "";
+        imageView2.style.border = 0;
+    }
+
+
+     //INPUT BOXES FOR DONATION
+    const inputFile3 = document.getElementById("file_input3");
+    const inputFile4 = document.getElementById("file_input4");
+    const inputFile5 = document.getElementById("file_input5");
+    const imageView3 = document.getElementById("img-view3");
+    const imageView4 = document.getElementById("img-view4");
+    const imageView5 = document.getElementById("img-view5");
+    const drop4 = document.getElementById("drop-area4");
+    const drop5 = document.getElementById("drop-area5");
+
+    inputFile3.addEventListener("change",uploadImage3);
+    inputFile4.addEventListener("change",uploadImage4);
+    inputFile5.addEventListener("change",uploadImage5);
+
+
+    function uploadImage3(){
+        let imgLink = URL.createObjectURL(inputFile3.files[0]);
+        let inputFiles = document.getElementById("file_input3");
+        imageView3.style.backgroundImage = `url(${imgLink})`;
+        imageView3.textContent = "";
+        imageView3.style.border = 0;
+        drop4.style.pointerEvents= "auto";
+        drop4.style.opacity = 1;
+        // Clone the selected file to file_input1
+        let fileInput4 = document.getElementById("file_input4");
+        fileInput4.files = inputFile3.files;
+
+        // Clone the selected file to file_input2
+        let fileInput5 = document.getElementById("file_input5");
+        fileInput5.files = inputFile3.files;
+    }
+    function uploadImage4(){
+        let imgLink = URL.createObjectURL(inputFile4.files[0]);
+        imageView4.style.backgroundImage = `url(${imgLink})`;
+        imageView4.textContent = "";
+        imageView4.style.border = 0;
+        drop5.style.pointerEvents= "auto";
+        drop5.style.opacity = 1;
+    }
+    function uploadImage5(){
+        let imgLink = URL.createObjectURL(inputFile5.files[0]);
+        imageView5.style.backgroundImage = `url(${imgLink})`;
+        imageView5.textContent = "";
+        imageView5.style.border = 0;
+    }
+
+
+ //INPUT BOXES
+    const inputFile6 = document.getElementById("file_input6");
+    const inputFile7 = document.getElementById("file_input7");
+    const inputFile8 = document.getElementById("file_input8");
+    const imageView6 = document.getElementById("img-view6");
+    const imageView7 = document.getElementById("img-view7");
+    const imageView8 = document.getElementById("img-view8");
+    const drop7 = document.getElementById("drop-area7");
+    const drop8 = document.getElementById("drop-area8");
+
+    inputFile6.addEventListener("change",uploadImage6);
+    inputFile7.addEventListener("change",uploadImage7);
+    inputFile8.addEventListener("change",uploadImage8);
+
+
+    function uploadImage6(){
+        let imgLink = URL.createObjectURL(inputFile6.files[0]);
+        let inputFiles = document.getElementById("file_input6");
+        imageView6.style.backgroundImage = `url(${imgLink})`;
+        imageView6.textContent = "";
+        imageView6.style.border = 0;
+        drop7.style.pointerEvents= "auto";
+        drop7.style.opacity = 1;
+        // Clone the selected file to file_input1
+        let fileInput7 = document.getElementById("file_input7");
+        fileInput7.files = inputFile6.files;
+
+        // Clone the selected file to file_input2
+        let fileInput8 = document.getElementById("file_input8");
+        fileInput8.files = inputFile6.files;
+    }
+    function uploadImage7(){
+        let imgLink = URL.createObjectURL(inputFile7.files[0]);
+        imageView7.style.backgroundImage = `url(${imgLink})`;
+        imageView7.textContent = "";
+        imageView7.style.border = 0;
+        drop8.style.pointerEvents= "auto";
+        drop8.style.opacity = 1;
+    }
+    function uploadImage8(){
+        let imgLink = URL.createObjectURL(inputFile8.files[0]);
+        imageView8.style.backgroundImage = `url(${imgLink})`;
+        imageView8.textContent = "";
+        imageView8.style.border = 0;
+    }
+
+});
+
+
+
+</script>
+{% endblock %}

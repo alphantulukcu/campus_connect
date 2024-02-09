@@ -6,137 +6,82 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <style>
-        body {
-            display: flex;
-            height: 1100px;
-            justify-content: center;
-            align-top: 40rem;
-            background: linear-gradient(to bottom right, #261D3D, #261D3D);
-        }
-
-        .container {
-            position: relative;
-            width: 100%;
-            height: auto;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: linear-gradient(to bottom right, #261D3D, #261D3D);
-            overflow: hidden;
-        }
-
-        .container img {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            height: 170px;
-            transform: translate(-50%, -50%);
-            transition: top 0.5s ease-in-out;
-            margin-bottom: 1rem;
-        }
-
-        .container:hover img {
-            top: 20%;
-        }
-
-        .form-container {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            opacity: 0;
-            transition: opacity 0.5s ease-in-out;
-            background-color: #E5E5E5;
-            padding: 2rem;
-            border-radius: 0.25rem;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            max-width: 50rem;
-            width: 100%;
-        }
-
-        .container:hover .form-container {
-            opacity: 1;
-        }
-
-        .form-container h3 {
-            text-align: center;
-            font-size: 1.875rem;
-            font-weight: bold;
-            margin-bottom: 1.5rem;
-        }
-
-        .form-container .mb-4 {
-            margin-bottom: 1rem;
-        }
-
-        .form-container .form-input {
-            display: block;
-            width: 100%;
-            padding: 0.75rem;
-            border-radius: 0.25rem;
-            border: 1px solid #ccc;
-            background-color: #E5E5E5;
-            transition: border-color 0.3s ease-in-out;
-        }
-
-        .form-container .form-input:focus {
-            outline: none;
-            border-color: #4c9aff;
-        }
-
-        .form-container .btn {
-            display: block;
-            width: 100%;
-            margin-top: 1rem;
-            padding: 0.75rem;
-            border-radius: 0.25rem;
-            background-color: #6B7280;
-            color: #FFF;
-            font-weight: 600;
-            text-align: center;
-            cursor: pointer;
-            transition: background-color 0.3s ease-in-out;
-        }
-
-        .form-container .btn:hover {
-            background-color: #4B5563;
-        }
-    </style>
+    <link href="{% static 'login.css' %}" id="theme-stylesheet" rel="stylesheet" type="text/css" media="all">
+    <link href="{% static 'fontawesomefree/css/fontawesome.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'fontawesomefree/css/brands.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'fontawesomefree/css/solid.css' %}" rel="stylesheet" type="text/css">
 </head>
-<body>
+<body style="height: 1100px">
     <div class="container">
-        <img src="{% static 'Logo_white.png' %}" alt="Background Image">
-        <div class="form-container">
+        <img src="{% static 'Logo_white.png' %}" alt="Background Image" id="logoImg">
+        <div class="form-container" style="top: 60%">
             <div class="">
-                <h3 class="text-center text-3xl font-bold mb-6">Login</h3>
-                <form action="{% url 'create_account' %}" method="POST">
-                    {% csrf_token %}
-                    {% if message %}
-                        <div class="bg-yellow-100 text-yellow-800 rounded-md p-4 mb-4">
-                            {{ message }}
-                        </div>
-                    {% endif %}
-                    <div class="mb-4">
-                      <label for="username" class="block text-gray-700">User Name:</label>
-                      <input type="text" class="form-input" id="username" name="username" placeholder="Enter User Name" required>
+            <button id="toggle-theme-btn" onclick="toggleTheme()"><i class="icon-color fa-solid fa-moon"></i></button>
+
+            <h3 class="text-center text-3xl font-bold mb-6">Register</h3>
+            <form action="{% url 'create_account' %}" method="POST">
+                {% csrf_token %}
+                {% if message %}
+                    <div class="bg-yellow-100 text-yellow-800 rounded-md p-4 mb-4">
+                        {{ message }}
                     </div>
-                    <div class="mb-4">
-                      <label for="fullname" class="block text-gray-700">Name and Surname:</label>
-                      <input type="text" class="form-input" id="fullname" name="fullname" placeholder="Enter Name and Surname" required>
-                    </div>
-                    <div class="mb-4">
-                      <label for="email" class="block text-gray-700">User email:</label>
-                      <input type="text" class="form-input" id="email" name="email" placeholder="Enter User Email" required>
-                    </div>
-                    <div class="mb-4">
-                      <label for="password" class="block text-gray-700">Password:</label>
-                      <input type="password" class="form-input" id="password" name="password" placeholder="Enter Password" required>
-                    </div>
-                    <button type="submit" class="btn">Register</button>
-                  </form>
+                {% endif %}
+                <div class="mb-4">
+                    <label for="username" class="label">Your Username:</label>
+                    <input type="text" class="form-input" id="username" name="username" placeholder="Enter Username" required>
+                </div>
+                <div class="mb-4">
+                    <label for="name" class="label">Name:</label>
+                    <input type="text" class="form-input" id="name" name="name" placeholder="Name" required>
+                </div>
+                <div class="mb-4">
+                    <label for="surname" class="label">Surname:</label>
+                    <input type="text" class="form-input" id="surname" name="surname" placeholder="Surname:" required>
+                </div>
+                <div class="mb-4">
+                    <label for="email" class="label">Your Bilkent mail:</label>
+                    <input type="text" class="form-input" id="email" name="email" placeholder="Enter Bilkent Email" required>
+                </div>
+                <div class="mb-4">
+                    <label for="password" class="label">Your Password:</label>
+                    <input type="password" class="form-input" id="password" name="password" placeholder="Enter Password" required>
+                </div>
+                <button type="submit" class="btn">Register</button>
+            </form>
+            <form action="{% url 'home' %}">
+                <button type="submit" class="btn2">Back to Log in</button>
+            </form>
+
             </div>
         </div>
     </div>
+<script>
+    function toggleTheme() {
+    const themeStylesheet = document.getElementById('theme-stylesheet');
+    const currentTheme = themeStylesheet.getAttribute('href');
+    const isDarkMode = currentTheme.includes('dark');
+    const logo = document.getElementById('logoImg')
+
+    // Toggle between light and dark mode
+    if (isDarkMode) {
+        themeStylesheet.setAttribute('href', "{% static 'login.css'%}");
+        logo.src = "{% static 'Logo_White.png'%}";
+        console.log('dark activated');
+    } else {
+        themeStylesheet.setAttribute('href', "{% static 'login_dark.css'%}");
+        logo.src = "{% static 'logo_orange.png'%}";
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    const prefersDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const logo = document.getElementById('logoImg')
+    if (prefersDarkMode) {
+        document.getElementById('theme-stylesheet').setAttribute('href', "{% static 'login_dark.css'%}");
+        logo.src = "{% static 'logo_orange.png'%}";
+    }
+});
+
+</script>
 </body>
 </html>

@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="{% static 'default.css' %}" id="theme-stylesheet" rel="stylesheet" type="text/css" media="all">
+    <link href="{% static 'fontawesomefree/css/fontawesome.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'fontawesomefree/css/brands.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'fontawesomefree/css/solid.css' %}" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/alertifyjs/build/css/alertify.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/alertifyjs/build/css/themes/default.min.css" />
+
+</head>
+<body class="flex flex-col min-h-screen">
+
+    <div class="container mx-auto">
+        <div class="navbar fixed top-0 left-0 right-0" id="navbar">
+            <div class="navbar-brand">
+                <a href="{% url 'campus_connect' %}" class="btn" id="logo">
+                    <img src="{% static 'Logo_white.png' %}" alt="Logo" id="logoImg">
+                </a>
+                <h1>{% block title %} {% endblock %}</h1>
+            </div>
+            <form action="{% url 'search_results' %}" method="get" class="flex items-center">
+                    <input id="query" type="text" name="query" placeholder="Search..." class="search-box" required>
+                    <button type="submit" class="btn px-4 py-2 text-white rounded-r"><i class="icon-color fa-solid fa-magnifying-glass"></i></button>
+            </form>
+            <div class="navbar-menu" id="navbar-menu">
+                <!-- Add navigation links here -->
+                <a href="{% url 'add' %}" class="btn"><i class="icon-color fa-solid fa-plus"></i> Add</a>
+                <a href="{% url 'market' %}" class="btn"><i class="icon-color fa-solid fa-cart-shopping"></i> Market</a>
+                <a href="{% url 'forum' %}" class="btn"><i class="icon-color fa-solid fa-newspaper"></i> Forum</a>
+                <a href="{% url 'profile' %}" class="btn"><i class="icon-color fa-solid fa-user"></i> Profile</a>
+                <a href="{% url 'chats' %}" class="btn"><i class="icon-color fa-solid fa-inbox" ></i> Chat Inbox</a>
+                <a href="{% url 'logout' %}" class="btn"><i class="icon-color fa-solid fa-right-from-bracket"></i> Logout</a>
+                <button id="toggle-theme-btn" onclick="toggleTheme()"><i class="icon-color fa-solid fa-moon"></i></button>
+            </div>
+        </div>
+
+
+<div class="top-container">
+
+
+        {%  block content %}
+
+      {%  endblock %}
+    </div>
+  </div>
+
+<div class="bottom-navbar">
+            <div class="bottom-navbar-menu">
+                <!-- Add navigation links here -->
+                <a href="{% url 'add' %}" class="btn"><i class="fa-solid fa-plus"></i></a>
+                <a href="{% url 'market' %}" class="btn"><i class="fa-solid fa-cart-shopping" style="color: #ffffff;"></i></a>
+                <a href="{% url 'forum' %}" class="btn"><i class="fa-solid fa-newspaper" style="color: #ffffff;"></i></a>
+                <a href="{% url 'profile' %}" class="btn"><i class="fa-solid fa-user"></i></a>
+                <a href="{% url 'chats' %}" class="btn"><i class="fa-solid fa-inbox" style="color: #ffffff;"></i></a>
+                <a href="{% url 'logout' %}" class="btn"><i class="fa-solid fa-right-from-bracket"></i></a>
+            </div>
+</div>
+
+
+    <footer class="footer">
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+            <div class="col-span-2 md:col-span-1">
+                <h4 class="text-lg font-semibold mb-2">Navigation</h4>
+                <ul class="list-none p-0 m-0">
+                    <li><a href="{% url 'home' %}" class="btn">Home</a></li>
+                    <li><a href="{% url 'market' %}" class="btn">Market</a></li>
+                    <li><a href="{% url 'forum' %}" class="btn">Forum</a></li>
+                    <li><a href="" class="btn">Donate</a></li>
+                    <li><a href="{% url 'profile' %}" class="btn">Profile</a></li>
+                    <li><a href="{% url 'logout' %}" class="btn">Log Out</a></li>
+                </ul>
+            </div>
+            <div class="col-span-2 md:col-span-1 mx-auto justify-center">
+                <h4 class="text-lg font-semibold mb-2">Communication</h4>
+                <ul class="list-none p-0 m-0">
+                    <li>info@campusconnect.com.tr</li>
+                    <li>0 (312) 266 2626</li>
+                    <li>Bilkent University, Ankara</li>
+                </ul>
+            </div>
+            <div class="col-span-2 md:col-span-1 mx-auto justify-center">
+                <a href="#" class="mx-2">Facebook</a>
+                <a href="#" class="mx-2">Twitter</a>
+                <a href="#" class="mx-2">LinkedIn</a>
+                <a href="https://www.instagram.com/campusconnectbilkent/" target="_blank" class="mx-2">Instagram</a>
+            </div>
+        </div>
+
+        <a href="https://w3.bilkent.edu.tr/www/" target="_blank" class="btn">
+            <img class="mt-4 "src="{% static 'bilkent.png' %}" alt="Bilkent">
+        </a>
+        <a href="{% url 'home' %}" class="btn">
+            <img class="mt-4 "src="{% static 'Logo_white.png' %}" alt="Bilkent">
+        </a>
+        <p class="mt-4">&copy; 2023 Facid by Bilkent University. All rights reserved.</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/js/bootstrap.min.js"></script>
+    <script>
+
+        document.getElementById('addForm').addEventListener('submit', function() {
+            // When the form is submitted, show the spinner
+            document.getElementById('spinner').style.display = 'flex';
+        });
+
+        document.getElementById('addForm2').addEventListener('submit', function() {
+            // When the form is submitted, show the spinner
+            document.getElementById('spinner').style.display = 'flex';
+        });
+    </script>
+<script>
+window.onscroll = function() {scrollFunction()};
+
+function scrollFunction() {
+  if (document.body.scrollTop > 80 || document.documentElement.scrollTop > 80) {
+    document.getElementById("navbar").style.padding = "5px 5px";
+    document.getElementById("logo").style.fontSize = "25px";
+  } else {
+    document.getElementById("navbar").style.padding = "35px 10px";
+    document.getElementById("logo").style.fontSize = "35px";
+  }
+}
+</script>
+<script src="https://cdn.jsdelivr.net/npm/alertifyjs/build/alertify.min.js"></script>
+<script type="text/javascript">
+    alertify.set('notifier','position', 'top-right');
+    window.onload = function() {
+        {% if message %}
+            var messageType = "{{ message_type }}";
+            if(messageType === 'error') {
+                alertify.error("{{ message }}", 4);
+            } else if(messageType === 'success') {
+                alertify.success("{{ message }}", 4);
+            }
+        {% endif %}
+        checkInternetConnection();
+    }
+</script>
+<script>
+    function toggleTheme() {
+    const themeStylesheet = document.getElementById('theme-stylesheet');
+    const currentTheme = themeStylesheet.getAttribute('href');
+    const isDarkMode = currentTheme.includes('dark');
+    const logo = document.getElementById('logoImg')
+
+    // Toggle between light and dark mode
+    if (isDarkMode) {
+        themeStylesheet.setAttribute('href', "{% static 'default.css'%}");
+        logo.src = "{% static 'Logo_White.png'%}";
+        console.log('dark activated');
+    } else {
+        themeStylesheet.setAttribute('href', "{% static 'default_dark.css'%}");
+        logo.src = "{% static 'logo_orange.png'%}";
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    const prefersDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const logo = document.getElementById('logoImg')
+    if (prefersDarkMode) {
+        document.getElementById('theme-stylesheet').setAttribute('href', "{% static 'default_dark.css'%}");
+        logo.src = "{% static 'logo_orange.png'%}";
+    }
+});
+
+function checkInternetConnection() {
+        var online = navigator.onLine;
+
+        if (!online) {
+            // Redirect to the error page
+            window.location.href = "{% url 'error_view' %}";
+        }
+}
+</script>
+</body>
+</html>
+

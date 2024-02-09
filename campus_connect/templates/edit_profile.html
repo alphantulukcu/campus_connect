@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+Profile
+{% endblock %}
+
+{% block content %}
+<script>
+    function showTab(tabName) {
+        const tabs = document.getElementsByClassName('tab');
+        for (const tab of tabs) {
+            tab.style.display = 'none';
+        }
+        document.getElementById(tabName).style.display = 'block';
+    }
+
+    function toggleTabs(tabName) {
+        const postTab = document.getElementById('postTab');
+        const entryTab = document.getElementById('entryTab');
+
+        if (tabName === 'postTab') {
+            postTab.style.display = 'block';
+            entryTab.style.display = 'none';
+        } else if (tabName === 'entryTab') {
+            postTab.style.display = 'none';
+            entryTab.style.display = 'block';
+        }
+    }
+
+    // Initially, hide the entryTab
+    document.getElementById('entryTab').style.display = 'none';
+
+    // Show the postTab by default
+    toggleTabs('postTab');
+</script>
+<style>
+    .change-password-button {
+    background-color: #3498db; /* Background color */
+    color: #fff; /* Text color */
+    padding: 10px 20px; /* Padding around the button text */
+    border: none; /* Remove the button border */
+    border-radius: 5px; /* Rounded corners */
+    cursor: pointer; /* Show a pointer cursor on hover */
+    font-size: 16px; /* Font size */
+    text-align: center; /* Center the text horizontally */
+    transition: background-color 0.3s; /* Smooth color transition on hover */
+
+    /* Optional: Add a box shadow for a subtle 3D effect on hover */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Style the button on hover */
+.change-password-button:hover {
+    background-color: #2979c8; /* Darker color on hover */
+}
+</style>
+<div class="profile-card mx-auto">
+<div class="profile-header">
+  <img src="{{profile.profile_image}}" class="profile-image" alt="Profile Image">
+</div>
+<form  enctype="multipart/form-data" action="{% url 'edit_account' %}" method="POST">
+    {% csrf_token %}
+    {% if message %}
+        <div class="bg-yellow-100 text-yellow-800 rounded-md p-4 mb-4">
+            {{ message }}
+        </div>
+    {% endif %}
+    <div class="profile-details">
+        <label for="profile_photo" class="block text-gray-700">Select An Image</label>
+        <input type="file" id="profile_photo" name="profile_photo" accept="image/*">
+    </div>
+    <div class="mb-4">
+      <label for="edit_username" class="block text-gray-700">Your Username:</label>
+      <input type="text" class="form-input" id="edit_username" name="edit_username" placeholder="Enter Username" value="{{profile.user.username}}">
+    </div>
+    <div class="mb-4">
+      <label for="edit_name" class="block text-gray-700">Name:</label>
+      <input type="text" class="form-input" id="edit_name" name="edit_name" placeholder="Name" value="{{profile.user.first_name}}">
+    </div>
+    <div class="mb-4">
+      <label for="edit_surname" class="block text-gray-700">Surname:</label>
+      <input type="text" class="form-input" id="edit_surname" name="edit_surname" placeholder="Surname" value="{{profile.user.last_name}}">
+    </div>
+
+    <div class="mb-4">
+      <label for="edit_bio" class="block text-gray-700">Bio:</label>
+      <input type="text" class="form-input" id="edit_bio" name="edit_bio" placeholder="Bio" value="{{profile.bio}}">
+    </div>
+
+
+
+    <button type="submit" class="settings-button">Save Changes</button>
+    <a href="{% url 'change_password' %}" class="change-password-button">Change Password</a>
+
+
+
+
+</form>
+</div>
+
+{% endblock %}
+
+{% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+            <li>{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}

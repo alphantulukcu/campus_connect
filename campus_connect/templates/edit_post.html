@@ -1,0 +1,172 @@
+{% extends "half_base.html" %}
+{% load static %}
+
+{% block title %}
+Add Post or Entry
+{% endblock %}
+
+
+
+{% block content %}
+<div class="left-container">
+        <div class="flex">
+            <button class="tab-btn btn-primary py-3 px-4 text-black font-semibold" >Preview</button>
+        </div>
+        <div class="horziontal-card-container"  >
+                    <!-- Card 1 -->
+                <div class="card" id="postPreview">
+                    <div class="profile-for_card">
+                                    <img class="profile-for_card" src="{{post.owner.profile_image}}" >
+                                    <form action="{% url 'show_profile' %}" method="post">
+                                        <input type="hidden" id='user_id_2' name='user_id_2'  value="{{post.owner.id}}">
+                                        {% csrf_token %}
+                                        <button type="submit">
+                                            <p>{{ post.owner.user.first_name }} {{ post.owner.user.last_name }}</p>
+                                        </button>
+                                    </form>
+                                </div>
+                    <img class="card-img" src="{{post.image_token}}">
+                        <div class="card-content">
+                            <h2>{{post.title}}</h2>
+                            <h1>{{post.category.name}} / {{post.subcategory.name}}</h1>
+                            <h6>{{post.description}}</h6>
+                            <h3>{{post.price}}</h3>
+                        </div>
+                </div>
+        </div>
+</div>
+
+
+    <div class="right-container">
+        <div>
+            <div class="add-card mx-auto" id="postTab" style="display: flex; flex-direction: column">
+            <div class="add-header">
+              <img src="{{ post.image_token }}"  class="add-header img" alt="Profile Image">
+
+            </div>
+                <a href="{% url 'edit_profile' %}" class="btn">Upload Image</a>
+            <form enctype="multipart/form-data" action="{% url 'edit_post_contents' %}" method="POST">
+                {% csrf_token %}
+                {% if message %}
+                    <div class="bg-yellow-100 text-yellow-800 rounded-md p-4 mb-4">
+                        {{ message }}
+                    </div>
+                {% endif %}
+                <div class="mb-4">
+                  <label for="file_input" class="block text-gray-700">Select An Image</label>
+                  <input type="file" id="file_input" name="file_input" accept="image/*" onchange="previewImage(event)">
+                </div>
+                <div class="mb-4">
+                  <label for="post_title" class="block text-gray-700">Title:</label>
+                  <input type="text" class="form-input" id="post_title" name="post_title" placeholder="Enter Title" value="{{post.title}}">
+                </div>
+                <div class="mb-4">
+                  <label for="post_description" class="block text-gray-700">Description:</label>
+                  <input type="text" class="form-input" id="post_description" name="post_description" placeholder="Enter Description"value="{{post.description}}">
+                </div>
+                <div class="form-group">
+                    <label for="post_categories">Category:</label>
+                    <select class="form-input" id="post_categories" name="post_categories" onchange="updatePostSubcategories()">
+                        <option value="">Select a Category</option>
+                        {% for category in categories %}
+                            <option value="{{category.name}}" {% if post.category.name == category.name %}selected{% endif %}>{{category.name}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="post_subcategories">Subcategory:</label>
+                    <select class="form-input" id="post_subcategories" name="post_subcategories">
+                        <option value="">Select a Subcategory</option>
+                        {% for subcategory in subcategories %}
+                                <option value="{{subcategory.name}}" {% if post.subcategory.name == subcategory.name %}selected{% endif %}>{{subcategory.category.name}}/{{subcategory.name}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="mb-4">
+                  <label for="post_price" class="block text-gray-700">Price:</label>
+                  <input type="number" class="form-input" id="post_price" name="post_price" min="0" placeholder="Enter Price" value="{{post.price}}">
+                </div>
+                <input type="hidden" id='post_id' name='post_id'  value="{{post.id}}">
+                <button type="submit" class="settings-button">Save Changes</button>
+            </form>
+          </div>
+        </div>
+    </div>
+<script>
+function previewImage(event) {
+  const file = event.target.files[0];
+  const reader = new FileReader();
+
+  reader.onload = function() {
+    const preview = document.getElementById('postPreview'); // Assuming postPreview is the preview element ID
+    const img = preview.querySelector('img');
+    img.src = reader.result;
+
+    const post = document.getElementById('postTab'); // Assuming postPreview is the preview element ID
+    const img2 = post.querySelector('img');
+    img2.src = reader.result;
+  }
+
+  if (file) {
+    reader.readAsDataURL(file);
+  }
+}
+
+    function showTab(tabName) {
+        const tabs = document.getElementsByClassName('tab');
+        for (const tab of tabs) {
+            tab.style.display = 'none';
+        }
+        document.getElementById(tabName).style.display = 'block';
+    }
+
+    function toggleTabs(tabName) {
+        const postTab = document.getElementById('postTab');
+        const entryTab = document.getElementById('entryTab');
+
+        if (tabName === 'postTab') {
+            postTab.style.display = 'block';
+            postPreview.style.display = 'block';
+            postTab.style.flexDirection = 'column';
+            entryTab.style.display = 'none';
+            entryPreview.style.display = 'none';
+        } else if (tabName === 'entryTab') {
+            postTab.style.display = 'none';
+            postPreview.style.display = 'none';
+            entryTab.style.display = 'block';
+            entryPreview.style.display = 'block';
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+    // Get the input elements
+    const postTitleInput = document.getElementById('post_title');
+    const postDescriptionInput = document.getElementById('post_description');
+    const postPriceInput = document.getElementById('post_price');
+
+    // Get the preview elements
+    const postPreview = document.getElementById('postPreview');
+
+    // Add event listeners to the input fields
+    postTitleInput.addEventListener('input', updatePostPreview);
+    postDescriptionInput.addEventListener('input', updatePostPreview);
+    postPriceInput.addEventListener('input', updatePostPreview);
+
+
+    // Function to update the post preview
+    function updatePostPreview() {
+        const title = postTitleInput.value;
+        const description = postDescriptionInput.value;
+        const price = postPriceInput.value;
+
+        // Update the preview content
+        postPreview.querySelector('h2').textContent = title;
+        postPreview.querySelector('h6').textContent = description;
+        postPreview.querySelector('h3').textContent = price + '₺';
+    }
+
+});
+</script>
+{% endblock %}

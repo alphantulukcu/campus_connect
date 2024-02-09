@@ -1,0 +1,171 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}
+Chat Inbox
+{% endblock %}
+
+{% block content %}
+
+        <h2 class="toggle-title" >Sell</h2>
+        <div class="chat-preview-card-container">
+                  {% if chats_owner == 'Empty' %}
+                        <div class="chat-preview-card">
+                                <div class="chat-preview-card-content">
+                                    <h2>Anyone have not sent message to you yet</h2>
+                                    <h6> </h6>
+                                </div>
+                        </div>
+                    {% else %}
+                       {% for chat in chats_owner %}
+                            <div class="chat-preview-card">
+                                    <div class="chat-preview-card-content">
+                                        <form action="{% url 'chat_room' %}" method="post">
+                                            <input type="hidden" id='post_id_1' name='post_id_1'  value="{{chat.post.id}}">
+                                            {% csrf_token %}
+                                            <button type="submit">
+                                                <h2>{{chat.post.title}}</h2>
+                                            </button>
+                                        </form>
+                                        <h1>{{chat.post.category.name}} / {{chat.post.subcategory.name}}</h1>
+                                        {% if chat.get_last_message.from_profile.id == profile.id %}
+                                            <div class="message-sender-card">
+                                                <div class="message-header">
+                                                    <img src="{{profile.profile_image}}" class="comment-image" alt="Profile Image">
+                                                    <div class="message-details">
+                                                         <form action="{% url 'show_profile' %}" method="post">
+                                                                    <input type="hidden" id='user_id_1' name='user_id_1'  value="{{chat.get_last_message.from_profile.id}}">
+                                                                    {% csrf_token %}
+                                                                    <button type="submit">
+                                                                        <p>{{ chat.get_last_message.from_profile.user.first_name }} {{ chat.get_last_message.from_profile.user.last_name }}
+                                                                            {% if chat.get_last_message.from_profile.is_verified == 1 %}
+                                                                                <i class="fa-regular fa-circle-check" style="color: #30aa0e; margin-left: 0.5rem"></i>
+                                                                            {% endif %}
+                                                                        </p>
+                                                                    </button>
+                                                                </form>
+                                                        <h2>{{chat.get_last_message.message}}</h2>
+                                                        <h1>{{chat.get_last_message.created_at|timesince:now}} ago</h1>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        {% else %}
+                                            <div class="message-receiver-card">
+                                                <div class="message-header">
+                                                    <img src="{{chat.get_last_message.from_profile.profile_image}}" class="comment-image" alt="Profile Image">
+                                                    <div class="message-details">
+                                                         <form action="{% url 'show_profile' %}" method="post">
+                                                                    <input type="hidden" id='user_id_2' name='user_id_2'  value="{{chat.get_last_message.from_profile.id}}">
+                                                                    {% csrf_token %}
+                                                                    <button type="submit">
+                                                                        <p>{{ chat.get_last_message.from_profile.user.first_name }} {{ chat.get_last_message.from_profile.user.last_name }}
+                                                                            {% if chat.get_last_message.from_profile.is_verified == 1 %}
+                                                                                <i class="fa-regular fa-circle-check" style="color: #30aa0e; margin-left: 0.5rem"></i>
+                                                                            {% endif %}
+                                                                        </p>
+                                                                    </button>
+                                                                </form>
+                                                        <h2>{{chat.get_last_message.message}}</h2>
+                                                        <h4>{{chat.get_last_message.created_at|timesince:now}} ago</h4>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+        </div>
+
+        <h2 class="toggle-title" >Buy</h2>
+        <div class="chat-preview-card-container">
+                  {% if chats_client == 'Empty' %}
+                        <div class="chat-preview-card">
+                                <div class="card-content">
+                                    <h2>You have not sent a message yet</h2>
+                                    <h6> </h6>
+                                </div>
+                        </div>
+                    {% else %}
+                       {% for chat in chats_client %}
+                            <div class="chat-preview-card">
+                                    <div class="chat-preview-card-content">
+                                        <form action="{% url 'chat_room' %}" method="post">
+                                            <input type="hidden" id='post_id_2' name='post_id_2'  value="{{chat.post.id}}">
+                                            {% csrf_token %}
+                                            <button type="submit">
+                                                <h2>{{chat.post.title}}</h2>
+                                            </button>
+                                        </form>
+                                        <h1>{{chat.post.category.name}} / {{chat.post.subcategory.name}}</h1>
+                                    {% if chat.get_last_message != None %}
+                                        {% if chat.get_last_message.from_profile.id == profile.id %}
+                                            <div class="message-sender-card">
+                                                <div class="message-header">
+                                                    <img src="{{profile.profile_image}}" class="comment-image" alt="Profile Image">
+                                                    <div class="message-details">
+                                                         <form action="{% url 'show_profile' %}" method="post">
+                                                                    <input type="hidden" id='user_id_3' name='user_id_3'  value="{{chat.get_last_message.from_profile.id}}">
+                                                                    {% csrf_token %}
+                                                                    <button type="submit">
+                                                                        <p>{{ chat.get_last_message.from_profile.user.first_name }} {{ chat.get_last_message.from_profile.user.last_name }}
+                                                                        {% if chat.get_last_message.from_profile.is_verified == 1 %}
+                                                                            <i class="fa-regular fa-circle-check" style="color: #30aa0e; margin-left: 0.5rem"></i>
+                                                                        {% endif %}
+                                                                        </p>
+                                                                    </button>
+                                                                </form>
+                                                        <h2>{{chat.get_last_message.message}}</h2>
+                                                        <h1>{{chat.get_last_message.created_at|timesince:now}} ago</h1>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        {% else %}
+                                            <div class="message-receiver-card">
+                                                <div class="message-header">
+                                                    <img src="{{chat.get_last_message.from_profile.profile_image}}" class="comment-image" alt="Profile Image">
+                                                    <div class="message-details">
+                                                         <form action="{% url 'show_profile' %}" method="post">
+                                                                    <input type="hidden" id='user_id_4' name='user_id_4'  value="{{chat.get_last_message.from_profile.id}}">
+                                                                    {% csrf_token %}
+                                                                    <button type="submit">
+                                                                        <p>{{ chat.get_last_message.from_profile.user.first_name }} {{ chat.get_last_message.from_profile.user.last_name }}
+                                                                            {% if chat.get_last_message.from_profile.is_verified == 1 %}
+                                                                                <i class="fa-regular fa-circle-check" style="color: #30aa0e; margin-left: 0.5rem"></i>
+                                                                            {% endif %}
+                                                                        </p>
+                                                                    </button>
+                                                                </form>
+                                                        <h2>{{chat.get_last_message.message}}</h2>
+                                                        <h4>{{chat.get_last_message.created_at|timesince:now}} ago</h4>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        {% endif %}
+                                        {% endif %}
+                                    </div>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+        </div>
+    </div>
+
+    <!-- Optional JavaScript -->
+    <!-- Popper.js first, then Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/js/bootstrap.min.js"></script>
+    <script>
+
+        document.getElementById('addForm').addEventListener('submit', function() {
+            // When the form is submitted, show the spinner
+            document.getElementById('spinner').style.display = 'flex';
+        });
+
+        document.getElementById('addForm2').addEventListener('submit', function() {
+            // When the form is submitted, show the spinner
+            document.getElementById('spinner').style.display = 'flex';
+        });
+    </script>
+
+{% endblock %}
+
+

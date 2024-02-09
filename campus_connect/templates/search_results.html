@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+
+{% block title %}
+Search
+{% endblock %}
+
+{% block content %}
+
+<div class="card-container">
+    {% for profile in profiles %}
+        <div class="profile-card">
+
+    <div class="profile-header">
+      <img src="{{profile.profile_image}}" class="profile-image" alt="Profile Image">
+          <div class="profile-details">
+                 <form action="{% url 'show_profile' %}" method="post">
+                    <input type="hidden" id='user_id_1' name='user_id_1'  value="{{profile.id}}">
+                    {% csrf_token %}
+                    <button type="submit">
+                        <p>
+                            {{ profile.user.first_name }} {{ profile.user.last_name }}
+                            {% if profile.is_verified == 1 %}
+                                <i class="fa-regular fa-circle-check" style="color: #30aa0e; margin-left: 0.5rem"></i>
+                            {% endif %}
+                        </p>
+                    </button>
+                </form>
+                <h2>@{{ profile.user.username }}</h2>
+                <h2 class="profile-bio">{{profile.bio}}</h2>
+          </div>
+    </div>
+  </div>
+    {% endfor %}
+
+    {% if posts %}
+        {% for post in posts %}
+        <div class="card">
+            <div class="profile-for_card">
+                <img class="profile-for_card" src="{{post.owner.profile_image}}" >
+                <form action="{% url 'show_profile' %}" method="post">
+                    <input type="hidden" id='user_id_2' name='user_id_2'  value="{{post.owner.id}}">
+                    {% csrf_token %}
+                    <button type="submit">
+                        <p>
+                            {{ post.owner.user.first_name }} {{ post.owner.user.last_name }}
+                         {% if post.owner.from_profile.is_verified == 1 %}
+                            <i class="fa-regular fa-circle-check" style="color: #30aa0e;"></i>
+                        {% endif %}
+                        </p>
+                    </button>
+                </form>
+            </div>
+            <img class="card-img" src="{{post.image_token}}">
+            <div class="card-content">
+                <form action="{% url 'show_post' %}" method="post">
+                    <input type="hidden" id='post_id' name='post_id'  value="{{post.id}}">
+                    <input type="hidden" id='type' name='type'  value="post">
+                    {% csrf_token %}
+                    <button type="submit">
+                        <h2>{{post.title}}</h2>
+                    </button>
+                </form>
+                <h1>{{post.category.name}} / {{post.subcategory.name}}</h1>
+                <h6>{{post.description}}</h6>
+                {% if post.price == 0 %}
+                    <h3>Free</h3>
+                {% else %}
+                    {% if post.type == 'borrow_ad' %}
+                        <h3>{{post.price}}₺ for {{post.borrowad.borrow_day}} days</h3>
+                    {% else %}
+                        <h3>{{post.price}}₺</h3>
+                    {% endif %}
+                {% endif %}
+                 <h1>{{post.created_at|timesince:now}} ago</h1>
+            </div>
+        </div>
+        {% endfor %}
+    {% endif %}
+
+    {% if entries == 'Empty' %}
+        <div class="card">
+            <div class="card-content">
+                <h2>No results found</h2>
+                <h6>Sorry, your search did not match any posts, profiles, or entries.</h6>
+            </div>
+        </div>
+    {% else %}
+        {% for entry in entries %}
+            <div class="card">
+                <div class="profile-for_card">
+                    <img class="profile-for_card" src="{{ entry.owner.profile_image }}" >
+                    <form action="{% url 'show_profile' %}" method="post">
+                        <input type="hidden" id='user_id_2' name='user_id_2'  value="{{ entry.owner.id }}">
+                        {% csrf_token %}
+                        <button type="submit">
+                            <p>{{ entry.owner.user.first_name }} {{ entry.owner.user.last_name }}</p>
+                        </button>
+                    </form>
+                </div>
+                <div class="card-content">
+                    <form action="{% url 'show_post' %}" method="post">
+                        <input type="hidden" id='entry_id' name='entry_id'  value="{{ entry.id }}">
+                        <input type="hidden" id='type' name='type'  value="entry">
+                        {% csrf_token %}
+                        <button type="submit">
+                            <h2>{{ entry.title }}</h2>
+                        </button>
+                    </form>
+                    <h1>{{ entry.category.name }} / {{ entry.subcategory.name }}</h1>
+                    <h6>{{ entry.description }}</h6>
+                    <h4>{{ entry.created_at|timesince:now }} ago</h4>
+                </div>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    {% if not entries and not posts and not profiles %}
+        <div class="card">
+            <div class="card-content">
+                <h2>No results found</h2>
+                <h6>Sorry, your search did not match any posts.</h6>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

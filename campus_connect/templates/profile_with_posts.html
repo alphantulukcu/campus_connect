@@ -1,0 +1,482 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+Profile
+{% endblock %}
+
+{%  block content %}
+
+        <div class="profile-card">
+
+            <div class="profile-header">
+              <img src="{{profile.profile_image}}" class="profile-image" alt="Profile Image">
+              <div class="profile-details">
+
+                        <p>
+                            {{ profile.user.first_name }} {{ profile.user.last_name }}
+                            {% if profile.is_verified == 1 %}
+                                <i class="fa-regular fa-circle-check" style="color: #30aa0e; margin-left: 0.5rem"></i>
+                            {% endif %}
+                        </p>
+                <h2>@{{ profile.user.username }}</h2>
+                <h2 class="profile-bio">{{profile.bio}}</h2>
+                  {% if type == 'own' %}
+                        <a href="{% url 'edit_profile' %}" class="btn">Edit Profile</a>
+                  {% endif %}
+              </div>
+            </div>
+          </div>
+
+        </div>
+</div>
+
+
+    <div class="bottom-container">
+         <div class="flex">
+         <button class="toggle-title" onclick="toggleTabs('postTab')">Post</button>
+         <button class="toggle-title" onclick="toggleTabs('soldTab')">Sold</button>
+         <button class="toggle-title" onclick="toggleTabs('entryTab')">Entry</button>
+        {% if type != 'visit' %}
+            <button class="toggle-title" onclick="toggleTabs('favoritesTab')">Favorites</button>
+        {% endif %}
+        </div>
+
+        <div class="card-container" id="postTab">
+                    {% if posts == 'Empty' %}
+                        <div class="horizontal-card">
+                                <div class="horizontal-card-content">
+                                    {% if type == 'visit' %}
+                                        <h2>{{ profile.user.first_name }} has not shared any post yet</h2>
+                                    {% else %}
+                                        <h2>You have not shared any post yet</h2>
+                                    {% endif %}
+                                    <h6> </h6>
+                                </div>
+                        </div>
+                    {% else %}
+                        {% for post in posts %}
+                            <div class="card">
+                                <div class="profile-for_card">
+                                    <img class="profile-for_card" src="{{post.owner.profile_image}}" >
+                                    <form action="{% url 'show_profile' %}" method="post">
+                                        <input type="hidden" id='user_id_2' name='user_id_2'  value="{{post.owner.id}}">
+                                        {% csrf_token %}
+                                        <button type="submit">
+                                            <p>{{ post.owner.user.first_name }} {{ post.owner.user.last_name }}
+                                                {% if post.owner.is_verified == 1 %}
+                                                    <i class="fa-regular fa-circle-check" style="color: #30aa0e; margin-left: 0.5rem"></i>
+                                                {% endif %}
+                                            </p>
+                                        </button>
+                                    </form>
+
+                                </div>
+                                <img class="card-img" src="{{post.image_token}}">
+                                <div class="card-content">
+                                    <form action="{% url 'show_post' %}" method="post">
+                                        <input type="hidden" id='post_id' name='post_id'  value="{{post.id}}">
+                                        <input type="hidden" id='type' name='type'  value="post">
+                                        {% csrf_token %}
+                                        <button type="submit">
+                                            <h2>{{post.title}}</h2>
+                                        </button>
+                                    </form>
+                                    <h1>{{post.category.name}} / {{post.subcategory.name}}</h1>
+
+                                </div>
+                                <div class="card-price">
+                                     {% if post.price == 0 %}
+                                        <h3>Free</h3>
+                                    {% else %}
+                                        {% if post.type == 'borrow_ad' %}
+                                            <h3>{{post.price}}₺ / {{post.borrowad.borrow_day}} days</h3>
+                                        {% else %}
+                                            <h3>{{post.price}}₺</h3>
+                                        {% endif %}
+                                    {% endif %}
+                                </div>
+                                <div class="card-bottom">
+                                     {% if post.id in actions %}
+                                        <button class="favorites-btn" id="unfavoriteButton_{{post.id}}" onclick="unfavoritePost('{{post.id}}', '{{post.favorites_number}}')">
+                                            <i class="fa-solid fa-star" style="color: #ffb433; margin-top: 0.2rem"></i>
+                                            {% if post.favorites_number > 0 %}
+                                                <h6 id="unfavorite_count_{{post.id}}" type="number">{{post.favorites_number}}</h6>
+                                            {% endif %}
+                                        </button>
+                                    {% else %}
+                                        <button class="favorites-btn" id="favoriteButton_{{post.id}}" onclick="favoritePost('{{post.id}}', '{{post.favorites_number}}')">
+                                            <i id="star" class="fa-regular fa-star" style="color: #9c9c9c; margin-top: 0.2rem" ></i>
+                                            {% if post.favorites_number > 0 %}
+                                                <h6 id="favorite_count_{{post.id}}" type="number">{{post.favorites_number}}</h6>
+                                            {% endif %}
+                                        </button>
+                                    {% endif %}
+
+                                    <h1>{{post.created_at|timesince:now}} ago</h1>
+                                </div>
+
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+        </div>
+
+         <div class="card-container" id="soldTab">
+                    {% if solds == 'Empty' %}
+                        <div class="horizontal-card">
+                                <div class="horizontal-card-content">
+                                    {% if type == 'visit' %}
+                                        <h2>{{ profile.user.first_name }} has not sold any post yet</h2>
+                                    {% else %}
+                                        <h2>You have not sold any post yet</h2>
+                                    {% endif %}
+                                    <h6> </h6>
+                                </div>
+                        </div>
+                    {% else %}
+                        {% for sold in solds %}
+                            <div class="card {% if sold.is_sold %}sold{% endif %}">
+                                {% if type == 'visit' %}
+                                    <div class="sold-overlay"></div>
+                                {% endif %}
+                                <div class="profile-for_card">
+                                    <img class="profile-for_card" src="{{sold.owner.profile_image}}" >
+                                    <form action="{% url 'show_profile' %}" method="post">
+                                        <input type="hidden" id='user_id_2' name='user_id_2'  value="{{sold.owner.id}}">
+                                        {% csrf_token %}
+                                        <button type="submit">
+                                            <p>{{ sold.owner.user.first_name }} {{ sold.owner.user.last_name }}
+                                                {% if sold.owner.is_verified == 1 %}
+                                                    <i class="fa-regular fa-circle-check" style="color: #30aa0e; margin-left: 0.5rem"></i>
+                                                {% endif %}
+                                            </p>
+                                        </button>
+                                    </form>
+
+                                </div>
+                                <img class="card-img" src="{{sold.image_token}}">
+                                <div class="card-content">
+                                    <form action="{% url 'show_post' %}" method="post">
+                                        <input type="hidden" id='post_id' name='post_id'  value="{{sold.id}}">
+                                        <input type="hidden" id='type' name='type'  value="post">
+                                        {% csrf_token %}
+                                        <button type="submit">
+                                            <h2>{{sold.title}}</h2>
+                                        </button>
+                                    </form>
+                                    <h1>{{sold.category.name}} / {{sold.subcategory.name}}</h1>
+
+                                </div>
+                                <div class="card-price">
+                                    <h3>Sold</h3>
+                                </div>
+                                <div class="card-bottom">
+                                     {% if sold.id in actions %}
+                                        <button class="favorites-btn" id="unfavoriteButton_{{sold.id}}" onclick="unfavoritePost('{{sold.id}}', '{{sold.favorites_number}}')">
+                                            <i class="fa-solid fa-star" style="color: #ffb433; margin-top: 0.2rem"></i>
+                                            {% if sold.favorites_number > 0 %}
+                                                <h6 id="unfavorite_count_{{sold.id}}" type="number">{{sold.favorites_number}}</h6>
+                                            {% endif %}
+                                        </button>
+                                    {% else %}
+                                        <button class="favorites-btn" id="favoriteButton_{{sold.id}}" onclick="favoritePost('{{sold.id}}', '{{sold.favorites_number}}')">
+                                            <i id="star" class="fa-regular fa-star" style="color: #9c9c9c; margin-top: 0.2rem" ></i>
+                                            {% if sold.favorites_number > 0 %}
+                                                <h6 id="favorite_count_{{sold.id}}" type="number">{{sold.favorites_number}}</h6>
+                                            {% endif %}
+                                        </button>
+                                    {% endif %}
+
+                                    <h1>{{sold.created_at|timesince:now}} ago</h1>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+        </div>
+
+        <div class="card-container" id="entryTab">
+                    {% if entries == 'Empty' %}
+                        <div class="horizontal-card">
+                                <div class="horizontal-card-content">
+                                    {% if type == 'visit' %}
+                                        <h2>{{ profile.user.first_name }} has not shared any post yet</h2>
+                                    {% else %}
+                                        <h2>You have not shared any entry yet</h2>
+                                    {% endif %}
+                                    <h6> </h6>
+                                </div>
+                        </div>
+                    {% else %}
+                        {% for entry in entries %}
+                            <div class="card">
+                                <div class="profile-for_card">
+                                    <img class="profile-for_card" src="{{entry.owner.profile_image}}" >
+                                    <form action="{% url 'show_profile' %}" method="post">
+                                        <input type="hidden" id='user_id_2' name='user_id_2'  value="{{post.owner.id}}">
+                                        {% csrf_token %}
+                                        <button type="submit">
+                                            <p>{{ entry.owner.user.first_name }} {{ entry.owner.user.last_name }}
+                                                {% if entry.owner.is_verified == 1 %}
+                                                    <i class="fa-regular fa-circle-check" style="color: #30aa0e; margin-left: 0.5rem"></i>
+                                                {% endif %}
+                                            </p>
+                                        </button>
+                                    </form>
+                                </div>
+                                    <div class="card-content">
+                                        <form action="{% url 'show_post' %}" method="post">
+                                            <input type="hidden" id='entry_id' name='entry_id'  value="{{entry.id}}">
+                                            <input type="hidden" id='type' name='type'  value="entry">
+                                            {% csrf_token %}
+                                            <button type="submit">
+                                                <h2>{{entry.title}}</h2>
+                                            </button>
+                                        </form>
+                                        <h1>{{entry.category.name}} / {{entry.subcategory.name}}</h1>
+                                        <h6>{{entry.description}}</h6>
+
+
+                                    </div>
+                                <div class="card-price"></div>
+                                <div class="card-bottom">
+                                     {% if entry.id in likes %}
+                                        <button class="favorites-btn" id="unlikeButton_{{entry.id}}" onclick="unlikeEntry('{{entry.id}}')">
+                                            <i class="fa-solid fa-heart" style="color: #ff4747;"></i>
+                                        </button>
+                                     {% else %}
+                                        <button class="favorites-btn" id="likeButton_{{entry.id}}" onclick="likeEntry('{{entry.id}}')">
+                                           <i class="fa-regular fa-heart" style="color: #9c9c9c;"></i>
+                                        </button>
+                                     {% endif %}
+                                    <h1>{{entry.created_at|timesince:now}} ago</h1>
+                                </div>
+
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+        </div>
+
+        <div class="card-container" id="favoritesTab">
+            {% if favorites == 'Empty' %}
+                <div class="horizontal-card">
+                        <div class="horizontal-card-content">
+                            {% if type == 'visit' %}
+                                <h2>{{ profile.user.first_name }} has not saved any post yet</h2>
+                            {% else %}
+                                <h2>You have not saved any post yet</h2>
+                            {% endif %}
+                            <h6> </h6>
+                        </div>
+                </div>
+            {% else %}
+                {% for favorite in favorites %}
+                    <div class="card">
+                        <div class="profile-for_card">
+                            <img class="profile-for_card" src="{{favorite.owner.profile_image}}" >
+                            <form action="{% url 'show_profile' %}" method="post">
+                                <input type="hidden" id='user_id_2' name='user_id_2'  value="{{favorite.owner.id}}">
+                                {% csrf_token %}
+                                <button type="submit">
+                                    <p>{{ favorite.owner.user.first_name }} {{ favorite.owner.user.last_name }}
+                                        {% if favorite.owner.is_verified == 1 %}
+                                            <i class="fa-regular fa-circle-check" style="color: #30aa0e; margin-left: 0.5rem"></i>
+                                        {% endif %}
+                                    </p>
+                                </button>
+                            </form>
+                        </div>
+                        <img class="card-img" src="{{favorite.image_token}}">
+                        <div class="card-content">
+                            <form action="{% url 'show_post' %}" method="post">
+                                <input type="hidden" id='post_id' name='post_id'  value="{{favorite.id}}">
+                                <input type="hidden" id='type' name='type'  value="post">
+                                {% csrf_token %}
+                                <button type="submit">
+                                    <h2>{{favorite.title}}</h2>
+                                </button>
+                            </form>
+                            <h1>{{favorite.category.name}} / {{favorite.subcategory.name}}</h1>
+                            <h6>{{favorite.description}}</h6>
+                            {% if favorite.price == 0 %}
+                                <h3>Free</h3>
+                            {% else %}
+                                {% if favorite.type == 'borrow_ad' %}
+                                    <h3>{{favorite.price}}₺ / {{favorite.borrowad.borrow_day}} days</h3>
+                                {% else %}
+                                    <h3>{{favorite.price}}₺</h3>
+                                {% endif %}
+                            {% endif %}
+                             <h1>{{favorite.created_at|timesince:now}} ago</h1>
+
+                            {% if favorite.id in actions %}
+                                    <button class="favorites-btn" id="unfavoriteButton_{{favorite.id}}" onclick="unfavoritePost('{{favorite.id}}', '{{favorite.favorites_number}}')">
+                                        <i class="fa-solid fa-star" style="color: #ffb433; margin-top: 0.2rem"></i>
+                                        {% if post.favorites_number > 0 %}
+                                            <h6 id="unfavorite_count_{{favorite.id}}" type="number">{{favorite.favorites_number}}</h6>
+                                        {% endif %}
+                                    </button>
+                            {% else %}
+                                    <button class="favorites-btn" id="favoriteButton_{{favorite.id}}" onclick="favoritePost('{{favorite.id}}', '{{favorite.favorites_number}}')">
+                                        <i id="star" class="fa-regular fa-star" style="color: #9c9c9c; margin-top: 0.2rem" ></i>
+                                        {% if favorite.favorites_number > 0 %}
+
+                                            <h6 id="favorite_count_{{favorite.id}}" type="number">{{favorite.favorites_number}}</h6>
+                                        {% endif %}
+                                    </button>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+    </div>
+<script>
+
+    function toggleTabs(tabName) {
+        const postTab = document.getElementById('postTab');
+        const soldTab = document.getElementById('soldTab');
+        const entryTab = document.getElementById('entryTab');
+        const favoritesTab = document.getElementById('favoritesTab');
+
+        if (tabName === 'postTab') {
+            postTab.style.display = 'flex';
+            soldTab.style.display = 'none';
+            entryTab.style.display = 'none';
+            favoritesTab.style.display = 'none';
+
+        }
+
+        else if (tabName === 'soldTab') {
+            postTab.style.display = 'none';
+            soldTab.style.display = 'flex';
+            entryTab.style.display = 'none';
+            favoritesTab.style.display = 'none';
+
+        }
+
+        else if (tabName === 'entryTab') {
+            postTab.style.display = 'none';
+            soldTab.style.display = 'none';
+            entryTab.style.display = 'flex';
+            favoritesTab.style.display = 'none';
+        }
+
+        else if (tabName === 'favoritesTab') {
+            postTab.style.display = 'none';
+            soldTab.style.display = 'none';
+            entryTab.style.display = 'none';
+            favoritesTab.style.display = 'flex';
+        }
+
+}
+
+    // Show the postTab by default
+    toggleTabs('postTab');
+</script>
+
+<script>
+    function favoritePost(post_id, favorites_number) {
+        // Replace these values with actual post_id, profile_id, and type
+        var button = document.getElementById('favoriteButton_' + post_id);
+        button.innerHTML = '<i class="fa-solid fa-star" style="color: #ffb433;"></i>';
+
+        fetch(`/favorite_post/${post_id}/`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                console.log('Action created successfully');
+            } else {
+                console.log('Error creating action:', data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Fetch error:', error);
+        });
+
+    }
+
+        function unfavoritePost(post_id, favorites_number) {
+        // Replace these values with actual post_id, profile_id, and type
+        var button = document.getElementById('unfavoriteButton_' + post_id);
+        button.innerHTML = '<i class="fa-regular fa-star" style="color: #9c9c9c;"></i>';
+
+        console.log('colorrrrrr');
+        fetch(`/unfavorite_post/${post_id}/`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                console.log('Action created successfully');
+            } else {
+                console.log('Error creating action:', data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Fetch error:', error);
+        });
+
+    }
+    // Function to get CSRF token from cookies
+    function getCookie(name) {
+        var value = "; " + document.cookie;
+        var parts = value.split("; " + name + "=");
+        if (parts.length === 2) return parts.pop().split(";").shift();
+    }
+
+    function changeColor(post_id) {
+        var button = document.getElementById('favoriteButton_' + post_id);
+        button.innerHTML = '<i class="fa-solid fa-star" style="color: #ffb433;"></i>';
+    }
+</script>
+
+<script>
+    function likeEntry(entry_id) {
+        // Replace these values with actual post_id, profile_id, and type
+        var button = document.getElementById('likeButton_' + entry_id);
+        button.innerHTML = '<i class="fa-solid fa-heart" style="color: #ff4747;"></i>';
+        console.log('colorrrrrr');
+        fetch(`/like_entry/${entry_id}/`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                console.log('Action created successfully');
+            } else {
+                console.log('Error creating action:', data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Fetch error:', error);
+        });
+
+    }
+
+        function unlikeEntry(entry_id) {
+        // Replace these values with actual post_id, profile_id, and type
+        var button = document.getElementById('unlikeButton_' + entry_id);
+        button.innerHTML = '<i class="fa-regular fa-heart" style="color: #9c9c9c;"></i>';
+        console.log('colorrrrrr');
+        fetch(`/unlike_entry/${entry_id}/`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                console.log('Action created successfully');
+            } else {
+                console.log('Error creating action:', data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Fetch error:', error);
+        });
+
+    }
+    // Function to get CSRF token from cookies
+    function getCookie(name) {
+        var value = "; " + document.cookie;
+        var parts = value.split("; " + name + "=");
+        if (parts.length === 2) return parts.pop().split(";").shift();
+    }
+
+    function changeColor(entry_id) {
+        var button = document.getElementById('likeButton_' + entry_id);
+        button.innerHTML = '<i class="fa-solid fa-heart" style="color: #ff4747;"></i>';
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,352 @@
+{% extends "half_base.html" %}
+{% load static %}
+{% block title %}
+Post
+{% endblock %}
+
+{% block content %}
+        {% if type == 'post' %}
+        <div class="left-container">
+
+                {% for post in posts %}
+                    <div class="detailed-post">
+                        <div class="slideshow-container">
+
+                            <div class="mySlides fade">
+                              <div class="numbertext"></div>
+                              <img src="{{post.image_token}}" style="width:100% " >
+                            </div>
+
+                            {% if post.image_token1|length > 10 %}
+                            <div class="mySlides fade">
+                              <div class="numbertext" ></div>
+                                {% if post.image_token1 != "" %}
+                                    <img src="{{post.image_token1}}" style="width:100% ">
+                                {% else %}
+                                    <img src="{% static 'blank_image.jpg' %}" style="width:100%">
+                                {% endif%}
+                            </div>
+                            {% endif %}
+
+                        {% if post.image_token2|length > 10 %}
+                            <div class="mySlides fade">
+                              <div class="numbertext"></div>
+                              {% if post.image_token2 != "" %}
+                                    <img src="{{post.image_token2}}" style="width:100%">
+                                {% else %}
+                                    <img src="{% static 'blank_image.jpg' %}" style="width:100%">
+                                {% endif%}
+                            </div>
+                        {% endif %}
+
+                        {% if post.image_token1|length > 10 %}
+                            <a class="prev" onclick="plusSlides(-1)">❮</a>
+                            <a class="next" onclick="plusSlides(1)">❯</a>
+                        {% endif %}
+
+                        </div>
+
+                            <div style="text-align:center">
+                              <span class="dot" onclick="currentSlide(1)"></span>
+                            {% if post.image_token1|length > 10 %}
+                              <span class="dot" onclick="currentSlide(2)"></span>
+                            {% endif %}
+                            {% if post.image_token2|length > 10 %}
+                              <span class="dot" onclick="currentSlide(3)"></span>
+                            {% endif %}
+                            </div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+        <div class="left-container">
+            {% if type == 'entry' %}
+                {% for entry in entries %}
+                    <div class="profile-card">
+                        <div class="profile-header">
+                            <img src="{{entry.owner.profile_image}}" class="profile-image" alt="Profile Image">
+                            <div class="profile-details">
+                                 <form action="{% url 'show_profile' %}" method="post">
+                                            <input type="hidden" id='user_id_1' name='user_id_1'  value="{{entry.owner.id}}">
+                                            {% csrf_token %}
+                                            <button type="submit">
+                                                <p>
+                                                    {{ entry.owner.user.first_name }} {{ entry.owner.user.last_name }}
+                                                    {% if entry.owner.is_verified == 1 %}
+                                                        <i class="fa-regular fa-circle-check" style="color: #30aa0e; margin-left: 0.5rem"></i>
+                                                    {% endif %}
+                                                </p>
+                                            </button>
+                                        </form>
+
+                                <h2>@{{ entry.owner.user.username }}</h2>
+                                <h2 class="profile-bio">{{entry.owner.bio}}</h2>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="detailed-post">
+                            <div class="detailed-post-content">
+                                <h6>@{{entry.owner.user.username}}</h6>
+                                <h2>{{entry.title}}</h2>
+                                <h1>{{entry.category.name}} / {{entry.subcategory.name}}</h1>
+                                <h6>{{entry.description}}</h6>
+                                <h1>{{entry.created_at|timesince:now}} ago</h1>
+                            </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                {% for post in posts %}
+                    <div class="profile-card">
+                        <div class="profile-header">
+                            <img src="{{post.owner.profile_image}}" class="profile-image" alt="Profile Image">
+                            <div class="profile-details">
+                                 <form action="{% url 'show_profile' %}" method="post">
+                                            <input type="hidden" id='user_id_2' name='user_id_2'  value="{{post.owner.id}}">
+                                            {% csrf_token %}
+                                            <button type="submit">
+                                                <p>
+                                                    {{ post.owner.user.first_name }} {{ post.owner.user.last_name }}
+                                                    {% if post.owner.is_verified == 1 %}
+                                                        <i class="fa-regular fa-circle-check" style="color: #30aa0e;"></i>
+                                                    {% endif %}
+                                                </p>
+                                            </button>
+                                        </form>
+
+                                <h2>@{{ post.owner.user.username }}</h2>
+                                <h2 class="profile-bio">{{post.owner.bio}}</h2>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="detailed-post">
+
+                            <div class="detailed-post-content">
+                                <h2>{{post.title}}</h2>
+                                <h1>{{post.category.name}} / {{post.subcategory.name}}</h1>
+                                <h6>{{post.description}}</h6>
+                                {% if post.price == 0 %}
+                                    <h3>Free</h3>
+                                {% else %}
+                                    {% if post.type == 'borrow_ad' %}
+                                        <h3>{{post.price}}₺ for {{post.borrowad.borrow_day}} days</h3>
+                                    {% else %}
+                                        <h3>{{post.price}}₺</h3>
+                                    {% endif %}
+                                {% endif %}
+                                <h1>{{post.created_at|timesince:now}} ago</h1>
+                                <br>
+                                {% if profile.user.id == post.owner.user.id%}
+                                    <div class="form-container">
+                                         <form action="{% url 'edit_post' %}" method="post">
+                                            <input type="hidden" id='post_id' name='post_id'  value="{{post.id}}">
+                                             <input type="hidden" id='type' name='type'  value="post">
+                                            {% csrf_token %}
+                                            <button type="submit" class="settings-button" >Edit <i class="fa-solid fa-pen-to-square" style="color: #EEEEEE;"></i></button>
+                                        </form>
+                                        <form action="{% url 'delete_post' %}" method="post">
+                                            <input type="hidden" id='post_id' name='post_id'  value="{{post.id}}">
+                                             <input type="hidden" id='type' name='type'  value="post">
+                                            {% csrf_token %}
+                                            <button type="submit" class="settings-button" >Delete <i class="fa-solid fa-trash" style="color: #EEEEEE;"></i></button>
+                                        </form>
+                                        <button onclick="showProfiles()" class="settings-button" >Mark as Sold <i class="fa-solid fa-hand-holding-dollar" style="color: #EEEEEE;"></i></button>
+
+                                    </div>
+                                {% else %}
+                                <div class="form-container">
+                                    <form action="{% url 'chat_room' %}" method="post">
+                                        <input type="hidden" id='post_id' name='post_id'  value="{{post.id}}">
+                                        {% csrf_token %}
+                                        <button type="submit" class="settings-button" >Message <i class="fa-solid fa-message" style="color: #ffffff;"></i></button>
+                                    </form>
+                                    <button onclick="openReportBox()" class="settings-button" >Report <i class="fa-solid fa-circle-exclamation" style="color: #ffffff;"></i></button>
+                                </div>
+                                {% endif %}
+
+                            </div>
+
+                    <div class="report-box" id="report-box">
+                         <form action="{% url 'report' %}" method="post" style="width: 100%;display: flex;flex-direction: row;height: 3rem; font-size: 1rem;">
+                            <input type="hidden" id='post_id' name='post_id'  value="{{post.id}}">
+                            <input type="hidden" id='user_id' name='user_id'  value="{{profile.id}}">
+                             <input type="hidden" id='type' name='type'  value="post">
+                            <input type="text" class="form-input" id="report_text" name="report_text" placeholder="Please explain your reason..." >
+                            {% csrf_token %}
+                            <br>
+                            <button class="settings-button" type="submit" style="margin-left: 0.5rem">Send</button>
+                        </form>
+                    </div>
+
+                    <div class="sold-pop-up" id="sold-pop-up">
+                        <h1>Who do you want to sold the post?</h1>
+                        <hr>
+
+                        {% for client in clients %}
+                            <div class="sold-pop-up-profile">
+                                    <img class="sold-pop-up-profile-image" src="{{client.profile_image}}"  alt="Profile Image">
+                                    <div class="sold-pop-up-profile-details">
+                                         <form action="{% url 'show_profile' %}" method="post">
+                                                    <input type="hidden" id='user_id_2' name='user_id_2'  value="{{client.id}}">
+                                                    {% csrf_token %}
+                                                    <button type="submit">
+                                                        <p>{{ client.user.first_name }} {{ client.user.last_name }}
+                                                            {% if client.is_verified == 1 %}
+                                                                <i class="fa-regular fa-circle-check" style="color: #30aa0e; margin-left: 0.5rem"></i>
+                                                            {% endif %}
+                                                        </p>
+                                                    </button>
+                                         </form>
+
+                                        <h2>@{{ client.user.username }}</h2>
+                                    </div>
+                                    <form action="{% url 'sold_post' %}" method="post">
+                                            <input type="hidden" id='post_id' name='post_id'  value="{{post.id}}">
+                                             <input type="hidden" id='type' name='type'  value="post">
+                                             <input type="hidden" id='client_id' name='client_id'  value="{{client.id}}">
+                                            {% csrf_token %}
+                                            <button type="submit" class="settings-button" >Sold <i class="fa-solid fa-hand-holding-dollar" style="color: #EEEEEE;"></i></button>
+                                    </form>
+                            </div>
+                        <hr>
+                        {% endfor %}
+                                <div class="sold-pop-up-profile">
+                                    <div class="sold-pop-up-profile-details">
+                                        <p>Another Platform... </p>
+                                    </div>
+                                    <form action="{% url 'sold_post' %}" method="post">
+                                            <input type="hidden" id='post_id' name='post_id'  value="{{post.id}}">
+                                             <input type="hidden" id='type' name='type'  value="post">
+                                             <input type="hidden" id='client_id' name='client_id'  value="{{profile.id}}">
+                                            {% csrf_token %}
+                                            <button type="submit" class="settings-button" >Sold <i class="fa-solid fa-hand-holding-dollar" style="color: #EEEEEE;"></i></button>
+                                    </form>
+                                </div>
+
+                        </div>
+                    </div>
+             </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+        {% if type == 'entry' %}
+        <div class="right-container">
+            <div class="comment-container" >
+                <h2>Comments</h2>
+                <div class="scroll-container">
+                 {% for comment in comments %}
+                    <div class="comment-card">
+                        <div class="comment-header">
+                            <img src="{{comment.owner.profile_image}}" class="comment-image" alt="Profile Image">
+                            <div class="comment-details">
+                                 <form action="{% url 'show_profile' %}" method="post">
+                                            <input type="hidden" id='user_id_3' name='user_id_3'  value="{{comment.owner.id}}">
+                                            {% csrf_token %}
+                                            <button type="submit">
+                                                <p>{{ comment.owner.user.first_name }} {{ comment.owner.user.last_name }}
+                                                    {% if comment.owner.is_verified == 1 %}
+                                                        <i class="fa-regular fa-circle-check" style="color: #30aa0e; margin-left: 0.5rem"></i>
+                                                    {% endif %}
+                                                </p>
+                                            </button>
+                                        </form>
+                                <h2>{{comment.comment}}</h2>
+                                <h1>{{comment.created_at|timesince:now}} ago</h1>
+                                <h2 class="profile-bio">{{post.owner.bio}}</h2>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+                </div>
+                <div class="mb-4">
+                    {% for entry in entries %}
+                    <form action="{% url 'add_comment' %}" method="post" style="width: 100%;display: flex;flex-direction: row;height: 3rem; font-size: 1rem; margin-top: 0.5rem">
+                        <input type="hidden" id='entry_id' name='entry_id'  value="{{entry.id}}">
+                        <input type="text" class="form-input" id="comment" name="comment" placeholder="Add your comment" >
+                        {% csrf_token %}
+                        <br>
+                        <button class="settings-button" type="submit" style="margin-left: 0.5rem">Comment</button>
+                    </form>
+                    <div style="display: flex;justify-content: left;margin-top: 0.5rem;">
+                        <button onclick="openReportBox()" class="settings-button" >Report <i class="fa-solid fa-circle-exclamation" style="color: #ffffff;"></i></button>
+                    </div>
+
+                    <div class="report-box" id="report-box">
+                         <form action="{% url 'report' %}" method="post" style="width: 100%;display: flex;flex-direction: row;height: 3rem; font-size: 1rem; margin-top: 0.5rem;">
+                            <input type="hidden" id='entry_id' name='entry_id'  value="{{entry.id}}">
+                             <input type="hidden" id='type' name='type'  value="entry">
+                            <input type="text" class="form-input" id="report_text" name="report_text" placeholder="Please explain your reason..." >
+                            {% csrf_token %}
+                            <br>
+                            <button class="settings-button" type="submit" style="margin-left: 0.5rem">Send</button>
+                        </form>
+                    </div>
+
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+    <!-- Optional JavaScript -->
+    <!-- Popper.js first, then Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/js/bootstrap.min.js"></script>
+    <script>
+
+        document.getElementById('addForm').addEventListener('submit', function() {
+            // When the form is submitted, show the spinner
+            document.getElementById('spinner').style.display = 'flex';
+        });
+
+        document.getElementById('addForm2').addEventListener('submit', function() {
+            // When the form is submitted, show the spinner
+            document.getElementById('spinner').style.display = 'flex';
+        });
+    </script>
+
+<script>
+let slideIndex = 1;
+showSlides(slideIndex);
+
+function plusSlides(n) {
+  showSlides(slideIndex += n);
+}
+
+function currentSlide(n) {
+  showSlides(slideIndex = n);
+}
+
+function showSlides(n) {
+  let i;
+  let slides = document.getElementsByClassName("mySlides");
+  let dots = document.getElementsByClassName("dot");
+  if (n > slides.length) {slideIndex = 1}
+  if (n < 1) {slideIndex = slides.length}
+  for (i = 0; i < slides.length; i++) {
+    slides[i].style.display = "none";
+  }
+  for (i = 0; i < dots.length; i++) {
+    dots[i].className = dots[i].className.replace(" active", "");
+  }
+  slides[slideIndex-1].style.display = "block";
+  dots[slideIndex-1].className += " active";
+}
+</script>
+
+<script>
+  function showProfiles() {
+      soldPopUp = document.getElementById('sold-pop-up');
+      soldPopUp.style.display = 'flex';
+  }
+</script>
+
+<script>
+      function openReportBox() {
+      reportBox = document.getElementById('report-box');
+      reportBox.style.display = 'flex';
+  }
+</script>
+
+{% endblock %}
+
+
